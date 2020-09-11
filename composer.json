@@ -1,0 +1,13 @@
+{
+    "name": "hx/interop",
+    "description": "Make all the languages talk to each other",
+    "type": "library",
+    "license": "Apache 2.0",
+    "authors": [
+        {
+            "name": "Neil E. Pearson",
+            "email": "neil@pearson.sydney"
+        }
+    ],
+    "require": {}
+}

@@ -1,0 +1,19 @@
+{
+  "name": "interop",
+  "version": "1.0.0",
+  "description": "Make all the languages talk to each other",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hx/interop.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hx/interop/issues"
+  },
+  "homepage": "https://github.com/hx/interop#readme"
+}
