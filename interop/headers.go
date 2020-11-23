@@ -1,21 +1,13 @@
 package interop
 
 import (
-	"bytes"
-	"strings"
+	"io"
 )
 
-type Headers []*Header
-
-type Header struct {
-	Name  string
-	Value string
-}
-
-const HeaderDelimiter = "\n"
+type Headers []Header
 
 func (h *Headers) Add(name, value string) *Headers {
-	n := append(*h, &Header{normalizeHeaderName(name), value})
+	n := append(*h, NewHeader(name, value))
 	*h = n
 	return h
 }
@@ -30,7 +22,7 @@ func (h *Headers) Delete(name string) *Headers {
 		o := *h
 		n := make(Headers, 0, len(o)-count)
 		for _, header := range o {
-			if !header.matchName(name) {
+			if !matchHeaderName(header, name) {
 				n = append(n, header)
 			}
 		}
@@ -41,8 +33,8 @@ func (h *Headers) Delete(name string) *Headers {
 
 func (h Headers) Get(name string) string {
 	for _, header := range h {
-		if header.matchName(name) {
-			return header.Value
+		if matchHeaderName(header, name) {
+			return header.Value()
 		}
 	}
 	return ""
@@ -50,37 +42,21 @@ func (h Headers) Get(name string) string {
 
 func (h Headers) GetAll(name string) (values []string) {
 	for _, header := range h {
-		if header.matchName(name) {
-			values = append(values, header.Value)
+		if matchHeaderName(header, name) {
+			values = append(values, header.Value())
 		}
 	}
 	return
 }
 
-func (h Headers) String() (str string) {
-	for _, header := range h {
-		str += header.String()
-	}
-	return
-}
-
-func (h *Header) String() string {
-	return h.Name + ": " + h.Value + HeaderDelimiter
-}
-
-func (h *Header) matchName(name string) bool {
-	return h.Name == normalizeHeaderName(name)
-}
-
-func normalizeHeaderName(name string) string {
-	var (
-		sep   = []byte{'-'}
-		parts = bytes.Split([]byte(strings.ToLower(name)), sep)
-	)
-	for i, part := range parts {
-		if len(part) > 0 {
-			parts[i][0] = bytes.ToUpper(part[:1])[0]
+func WriteHeaders(headers []Header, w io.Writer) (n int64, err error) {
+	var n1 int
+	for _, header := range headers {
+		if n1, err = writeHeader(header, w); err == nil {
+			n += int64(n1)
+		} else {
+			return
 		}
 	}
-	return string(bytes.Join(parts, sep))
+	return
 }
