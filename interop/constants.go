@@ -24,4 +24,5 @@ func (e Error) Error() string {
 const (
 	ErrPipeAlreadyClosed Error = "pipe already closed"
 	ErrEventHasClass     Error = "event must not have a class"
+	ErrNotDecodable      Error = "message is not in a decodable format"
 )
