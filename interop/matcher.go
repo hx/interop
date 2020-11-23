@@ -4,20 +4,26 @@ import (
 	"regexp"
 )
 
-type MessageMatcher interface {
-	MatchMessage(message Message) bool
+type Matcher interface {
+	Match(message Message) bool
+}
+
+type MatcherFunc func(message Message) bool
+
+func (f MatcherFunc) Match(message Message) bool {
+	return f(message)
 }
 
 type messageClassNameMatcher string
 
-func (m messageClassNameMatcher) MatchMessage(message Message) bool {
+func (m messageClassNameMatcher) Match(message Message) bool {
 	if message == nil {
 		return false
 	}
 	return message.GetHeader(MessageClassHeader) == string(m)
 }
 
-func MatchClassName(name string) MessageMatcher {
+func MatchClassName(name string) Matcher {
 	return messageClassNameMatcher(name)
 }
 
@@ -25,13 +31,13 @@ type messagePatternNameMatcher struct {
 	*regexp.Regexp
 }
 
-func (m *messagePatternNameMatcher) MatchMessage(message Message) bool {
+func (m *messagePatternNameMatcher) Match(message Message) bool {
 	if message == nil {
 		return false
 	}
 	return m.MatchString(message.GetHeader(MessageClassHeader))
 }
 
-func MatchClassRegexp(pattern *regexp.Regexp) MessageMatcher {
+func MatchClassRegexp(pattern *regexp.Regexp) Matcher {
 	return &messagePatternNameMatcher{pattern}
 }

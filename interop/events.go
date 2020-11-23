@@ -5,11 +5,19 @@ import (
 	"sync"
 )
 
-type EventHandler func(event Message) error
+type Handler interface {
+	Handle(event Message) error
+}
+
+type HandlerFunc func(event Message) error
+
+func (f HandlerFunc) Handle(event Message) error {
+	return f(event)
+}
 
 type eventRoute struct {
-	matcher MessageMatcher
-	handler EventHandler
+	matcher Matcher
+	handler Handler
 }
 
 type EventDispatcher struct {
@@ -17,25 +25,29 @@ type EventDispatcher struct {
 	mutex  sync.RWMutex
 }
 
-func (d *EventDispatcher) Handle(matcher MessageMatcher, handler EventHandler) {
+func (d *EventDispatcher) Handle(matcher Matcher, handler Handler) {
 	d.mutex.Lock()
-	d.routes = append(d.routes, &eventRoute{matcher: matcher, handler: handler})
+	d.routes = append(d.routes, &eventRoute{matcher, handler})
+	d.mutex.Unlock()
 }
 
-func (d *EventDispatcher) HandleClassName(name string, handler EventHandler) {
+func (d *EventDispatcher) HandleClassName(name string, handler Handler) {
 	d.Handle(MatchClassName(name), handler)
 }
 
-func (d *EventDispatcher) HandleClassRegexp(pattern *regexp.Regexp, handler EventHandler) {
+func (d *EventDispatcher) HandleClassRegexp(pattern *regexp.Regexp, handler Handler) {
 	d.Handle(MatchClassRegexp(pattern), handler)
 }
 
 func (d *EventDispatcher) Dispatch(event Message) (err error) {
-	var route *eventRoute
-	for _, route = range d.routes {
-		if route.matcher == nil || route.matcher.MatchMessage(event) {
-			err = route.handler(event)
-			break
+	d.mutex.RLock()
+	routes := d.routes
+	d.mutex.RUnlock()
+	for _, route := range routes {
+		if route.matcher == nil || route.matcher.Match(event) {
+			if err = route.handler.Handle(event); err != nil {
+				break
+			}
 		}
 	}
 	return

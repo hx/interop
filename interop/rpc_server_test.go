@@ -33,16 +33,16 @@ func NewEnv() *Env {
 func TestServer_Sanity(t *testing.T) {
 	env := NewEnv()
 	var events []Message
-	env.client.Events.Handle(nil, func(message Message) error {
+	env.client.Events.Handle(nil, HandlerFunc(func(message Message) error {
 		events = append(events, message)
 		return nil
-	})
-	env.server.HandleClassName("ping", func(request Message, response *MessageBuilder) {
+	}))
+	env.server.HandleClassName("ping", ResponderFunc(func(request Message, response *MessageBuilder) {
 		Equals(t, "ping", request.GetHeader(MessageClassHeader))
 		Equals(t, "0", request.GetHeader(MessageIDHeader))
 		Ok(t, env.server.Send(new(MessageBuilder).SetBinaryBody([]byte("pinged"))))
 		response.SetBody([]byte("pong"))
-	})
+	}))
 	Equals(t, 0, len(events))
 	response, err := env.client.Call("ping")
 	Equals(t, 1, len(events))

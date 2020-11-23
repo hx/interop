@@ -11,10 +11,10 @@ func TestEventDispatcher_Dispatch_uses_matching_handler(t *testing.T) {
 	var results []string
 	var dispatcher = new(EventDispatcher)
 
-	dispatcher.HandleClassName("foo", func(event Message) error {
+	dispatcher.HandleClassName("foo", HandlerFunc(func(event Message) error {
 		results = append(results, event.GetHeader(MessageClassHeader))
 		return nil
-	})
+	}))
 
 	Ok(t, dispatcher.Dispatch(NewRpcMessage("foo")))
 	Ok(t, dispatcher.Dispatch(NewRpcMessage("bar")))
@@ -26,9 +26,9 @@ func TestEventDispatcher_Dispatch_returns_errors(t *testing.T) {
 	var dispatcher = new(EventDispatcher)
 	var oops = errors.New("oops")
 
-	dispatcher.HandleClassName("foo", func(event Message) error {
+	dispatcher.HandleClassName("foo", HandlerFunc(func(event Message) error {
 		return oops
-	})
+	}))
 
 	Ok(t, dispatcher.Dispatch(NewRpcMessage("bar")))
 	Equals(t, oops, dispatcher.Dispatch(NewRpcMessage("foo")))
