@@ -41,12 +41,9 @@ func (mr *reader) Read() (Message, error) {
 			return nil, fmt.Errorf("invalid %s: %s", MessageContentLengthHeader, contentLengthStr)
 		}
 		message.body = make([]byte, contentLength)
-		n, err := io.ReadFull(mr.r, message.body)
+		_, err = io.ReadFull(mr.r, message.body)
 		if err != nil {
 			return nil, err
-		}
-		if n != int(contentLength) {
-			return nil, fmt.Errorf("expected %d bytes, but only received %d bytes", contentLength, n)
 		}
 		newline, err := mr.r.ReadByte()
 		if newline == '\r' {
@@ -61,11 +58,11 @@ func (mr *reader) Read() (Message, error) {
 		return message, nil
 	}
 
-	chunk, err := mr.readChunk()
+	paragraph, err := mr.readParagraph()
 	if err != nil {
 		return nil, err
 	}
-	for _, line := range chunk {
+	for _, line := range paragraph {
 		message.body = append(message.body, line...)
 	}
 
@@ -73,13 +70,13 @@ func (mr *reader) Read() (Message, error) {
 }
 
 func (mr *reader) readHeader() (Headers, error) {
-	chunk, err := mr.readChunk()
+	paragraph, err := mr.readParagraph()
 	if err != nil {
 		return nil, err
 	}
 	var headers Headers
 	var header Header
-	for _, line := range chunk {
+	for _, line := range paragraph {
 		header, err = ParseHeader(line)
 		if err != nil {
 			return nil, err
@@ -89,7 +86,7 @@ func (mr *reader) readHeader() (Headers, error) {
 	return headers, nil
 }
 
-func (mr *reader) readChunk() (chunk [][]byte, err error) {
+func (mr *reader) readParagraph() (paragraph [][]byte, err error) {
 	var line []byte
 	for {
 		line, err = mr.r.ReadBytes('\n')
@@ -99,7 +96,7 @@ func (mr *reader) readChunk() (chunk [][]byte, err error) {
 		if string(line) == "\n" || string(line) == "\r\n" {
 			return
 		}
-		chunk = append(chunk, line)
+		paragraph = append(paragraph, line)
 	}
 }
 
