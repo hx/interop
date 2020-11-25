@@ -44,5 +44,31 @@ module Hx::Interop
         expect(all.map &:body).to eq %W[Howdy!\n OMG\n]
       end
     end
+
+    context 'empty message bodies' do
+      let(:source) { <<~TEXT }
+        First-Message: is here
+
+
+        Next-Message: is here
+
+      TEXT
+
+      it 'is readable' do
+        message = subject.read
+        expect(message.headers.to_h).to eq 'First-Message' => 'is here'
+        expect(message.body).to eq ''
+
+        expect { subject.read }.to raise_error EOFError
+      end
+    end
+
+    context 'the end of a stream' do
+      let(:source) { '' }
+
+      it 'goes straight to EOF' do
+        expect { subject.read }.to raise_error EOFError
+      end
+    end
   end
 end

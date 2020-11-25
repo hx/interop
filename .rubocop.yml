@@ -20,7 +20,7 @@ Style/NestedParenthesizedCalls:
   Enabled: false
 
 Metrics/MethodLength:
-  Max: 14
+  Max: 16
 
 Metrics/BlockLength:
   Exclude:

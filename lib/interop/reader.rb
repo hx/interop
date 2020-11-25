@@ -4,6 +4,9 @@ module Hx
   module Interop
     # Reads messages from a stream (e.g. STDIN)
     class Reader
+      # Acceptable line terminators
+      NEWLINES = Set.new(%W[\n \r\n]).freeze
+
       # @param [IO, StringIO] stream
       def initialize(stream)
         @stream = stream
@@ -14,17 +17,17 @@ module Hx
       # @return [Message]
       def read
         @mutex.synchronize do
-          headers = read_headers
-          length  = headers[Headers::CONTENT_LENGTH]&.to_i
-          body    =
+          message      = Message.new(read_headers)
+          length       = message.headers[Headers::CONTENT_LENGTH]&.to_i
+          message.body =
             if length&.positive?
               @stream.read length
             elsif length.nil?
-              read_paragraph
+              read_paragraph.join
             else
               ''
             end
-          Message.new(headers, body)
+          message
         end
       end
 
@@ -45,7 +48,7 @@ module Hx
 
       # @return [Hash]
       def read_headers
-        read_paragraph.lines.to_h do |line|
+        read_paragraph.to_h do |line|
           line.strip.split(/:\s*/).tap do |pair|
             raise Error::InvalidHeader unless pair.length == 2
           end
@@ -53,10 +56,12 @@ module Hx
       end
 
       def read_paragraph
-        paragraph = @stream.gets('')
-        raise EOFError if paragraph.nil?
+        lines = []
+        while (line = @stream.readline("\n"))
+          return lines if NEWLINES.include? line
 
-        paragraph.sub /(\r?\n)\r?\n\z/, '\1'
+          lines << line
+        end
       end
     end
   end
