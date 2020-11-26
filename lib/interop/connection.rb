@@ -23,8 +23,16 @@ module Hx
         @reader.read_all &block
       end
 
-      def write(*messages)
-        @writer.write *messages
+      def write(*args)
+        @writer.write *args
+        self
+      end
+
+      alias << write
+
+      def close
+        @reader.close
+        @writer.close
       end
     end
   end

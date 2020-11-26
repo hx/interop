@@ -10,20 +10,22 @@ module Hx
         @mutex  = Mutex.new
       end
 
-      # @param [Array<Message>] messages
-      def write(*messages)
+      # @param [Message] message
+      def write(message, *args)
+        message = Message.build(message, *args)
+
         @mutex.synchronize do
-          messages.each do |message|
-            message.headers.each do |k, v|
-              @stream.puts "#{k}: #{v}"
-            end
-            @stream.puts
-            @stream.write message.body
-            @stream.puts
+          message.headers.each do |k, v|
+            @stream.puts "#{k}: #{v}"
           end
+          @stream.puts
+          @stream.write message.body
+          @stream.puts
         end
         self
       end
+
+      alias << write
     end
   end
 end

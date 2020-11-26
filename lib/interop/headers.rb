@@ -80,6 +80,7 @@ module Hx
 
       def canonical_key(key)
         key
+          .to_s
           .split(/[-_\s]+/)
           .map { |str| str[0].upcase + str[1..].downcase }
           .join('-')

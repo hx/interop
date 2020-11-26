@@ -42,8 +42,8 @@ func (s *RpcServer) Start() (err error) {
 }
 
 func (s *RpcServer) Send(event Message) error {
-	if event.GetHeader(MessageClassHeader) != "" {
-		return ErrEventHasClass
+	if event.GetHeader(MessageIDHeader) != "" {
+		return ErrEventHasID
 	}
 	return s.conn.Write(event)
 }

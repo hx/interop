@@ -19,6 +19,12 @@ Style/ClassAndModuleChildren:
 Style/NestedParenthesizedCalls:
   Enabled: false
 
+Style/CaseEquality:
+  Enabled: false
+
+Style/StabbyLambdaParentheses:
+  EnforcedStyle: require_no_parentheses
+
 Metrics/MethodLength:
   Max: 16
 
@@ -31,3 +37,12 @@ Lint/AmbiguousRegexpLiteral:
 
 Lint/AmbiguousOperator:
   Enabled: false
+
+Layout/SpaceInLambdaLiteral:
+  EnforcedStyle: require_space
+
+Layout/SpaceInsideHashLiteralBraces:
+  EnforcedStyle: no_space
+
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented

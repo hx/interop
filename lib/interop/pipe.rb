@@ -1,8 +1,9 @@
 require 'interop/channel'
+require 'interop/message'
 
 module Hx
   module Interop
-    # An object pipe. You can read exactly what is written to it.
+    # A message pipe. You can read exactly what is written to it.
     class Pipe
       def initialize(buffer_size = 0)
         @channel = Channel.new(buffer_size)
@@ -21,9 +22,11 @@ module Hx
         self
       end
 
-      def write(*objects)
-        @channel.put *objects
+      def write(message, *args)
+        @channel.put Message.build(message, *args)
       end
+
+      alias << write
 
       def close
         @channel.close

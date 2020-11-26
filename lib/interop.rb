@@ -4,6 +4,7 @@ require 'interop/error'
 require 'interop/version'
 require 'interop/connection'
 require 'interop/pipe'
+require 'interop/rpc/server'
 
 module Hx
   module Interop
