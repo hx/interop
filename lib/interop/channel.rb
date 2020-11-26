@@ -7,23 +7,22 @@ module Hx
       # :nodoc:
       class Blocker
         def initialize
-          @read, @write = IO.pipe
-          @mutex        = Mutex.new
+          @queue = Queue.new
+          @mutex = Mutex.new
         end
 
         def resolve
-          @write.puts
-          @write.close
+          @queue << nil
+          @queue.close
           @value
         end
 
         def wait
           @mutex.synchronize do
-            next unless @read
+            next unless @queue
 
-            @read.gets
-            @read.close
-            @read = nil
+            @queue.shift
+            @queue = nil
           end
           @value
         end
