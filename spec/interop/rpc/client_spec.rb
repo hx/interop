@@ -38,8 +38,8 @@ module Hx::Interop
 
     context 'with an error in an event handler' do
       it 'raises on the waiting thread' do
-        subject.on('foo') { raise 'ohmy' }
-        server_conn.write 'Interop-Rpc-Class' => 'foo'
+        subject.on(/foo/) { raise 'ohmy' }
+        server_conn.write 'Interop-Rpc-Class' => 'food'
         expect { subject.wait }.to raise_error RuntimeError, 'ohmy'
       end
     end
