@@ -1,28 +1,11 @@
-require 'interop/rpc/dispatcher'
-require 'interop/rpc/controller'
+require 'interop/rpc/base'
 
 module Hx
   module Interop
     # Contains RPC-specific classes.
     module RPC
       # An RPC server.
-      class Server
-        def initialize(connection)
-          @connection = connection
-          @dispatcher = Dispatcher.new
-          @io_thread  = Thread.new { run }
-        end
-
-        # TODO: custom exception handler
-
-        # Wait for the server to finish (i.e. for the connection to close).
-        def wait
-          @io_thread.join
-          raise @error if @error # TODO: wrap in something specific, to preserve backtrace
-
-          self
-        end
-
+      class Server < Base
         # @param [Message] event
         def send(event, *args)
           event = Message.build(event, *args)
@@ -34,24 +17,16 @@ module Hx
 
         alias << send
 
-        def on(criteria, *handler, &block)
-          @dispatcher.on criteria, *handler, &block
-          self
-        end
-
         private
 
         def run
-          @connection.read_all do |request|
-            Thread.new do
-              response = make_response(@dispatcher.match(request)&.call request)
-              response[Headers::ID] = request[Headers::ID]
-              @connection << response
-            rescue StandardError => e
-              @error = e
-              @connection << Message.new(Headers::ERROR => "Unhandled exception: #{e}")
-              @connection.close
-            end
+          super do |request|
+            response = make_response(dispatcher.match(request)&.call request)
+            response[Headers::ID] = request[Headers::ID]
+            write response
+          rescue StandardError => e
+            write Headers::ERROR => "Unhandled exception: #{e}"
+            raise
           end
         end
 
