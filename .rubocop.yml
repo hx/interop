@@ -25,6 +25,9 @@ Style/CaseEquality:
 Style/StabbyLambdaParentheses:
   EnforcedStyle: require_no_parentheses
 
+Style/MixinGrouping:
+  EnforcedStyle: grouped
+
 Metrics/MethodLength:
   Max: 16
 

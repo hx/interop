@@ -1,5 +1,3 @@
-require 'interop/message'
-
 module Hx
   module Interop
     # Anything from which you can read a message.
@@ -18,7 +16,7 @@ module Hx
       # @return [Enumerable]
       # @yieldparam [Message]
       def read_all(&block)
-        return enum_for :read_all unless block_given?
+        return enum_for :read_all unless block
 
         _read_all &block
       end

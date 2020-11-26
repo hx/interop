@@ -35,8 +35,6 @@ module Hx
       end
 
       def _read_all
-        return enum_for :read_all unless block_given?
-
         loop do
           yield read
         rescue EOFError
