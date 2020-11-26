@@ -1,5 +1,9 @@
 require 'interop/error'
 
+# TODO: the only reason this class exists is because SizedQueue doesn't allow a zero max.
+#   Figure out a way to block on the first push to a SizedQueue, and this messy situation
+#   can go away for good.
+
 module Hx
   module Interop
     # :nodoc:
