@@ -77,7 +77,6 @@ module Hx
           end
         end
         put&.wait
-        raise Closed if @closed
 
         self
       end
