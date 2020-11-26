@@ -1,5 +1,5 @@
-require 'interop/reader'
-require 'interop/writer'
+require 'interop/stream_reader'
+require 'interop/stream_writer'
 
 module Hx
   module Interop
@@ -8,8 +8,8 @@ module Hx
       # @param [Reader, Pipe, IO, StringIO] reader
       # @param [Writer, Pipe, IO, StringIO] writer
       def initialize(reader, writer = reader)
-        reader = Reader.new(reader) if reader.respond_to? :readline
-        writer = Writer.new(writer) if writer.respond_to? :puts
+        reader = StreamReader.new(reader) if reader.respond_to? :readline
+        writer = StreamWriter.new(writer) if writer.respond_to? :puts
 
         @reader = reader
         @writer = writer
