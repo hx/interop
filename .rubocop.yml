@@ -9,6 +9,9 @@
 #
 # See https://docs.rubocop.org/rubocop/configuration
 
+AllCops:
+  NewCops: enable
+
 Style/FrozenStringLiteralComment:
   EnforcedStyle: never
 
@@ -56,3 +59,7 @@ Layout/FirstHashElementIndentation:
 Layout/HashAlignment:
   EnforcedHashRocketStyle: table
   EnforcedColonStyle: table
+
+Lint/EmptyBlock:
+  Exclude:
+    - spec/interop/interceptor_spec.rb
