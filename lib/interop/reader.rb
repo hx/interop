@@ -12,22 +12,23 @@ module Hx
         _read
       end
 
-      # Yields messages as they are read. Returns when EOF is reached.
-      # @return [Enumerable]
+      # Yields messages as they are read. Returns self when EOF is reached.
+      # @return [Enumerable, Reader]
       # @yieldparam [Message]
-      def read_all(&block)
-        return enum_for :read_all unless block
+      def read_all
+        return enum_for :read_all unless block_given?
 
-        _read_all &block
+        loop do
+          yield read
+        rescue EOFError
+          break
+        end
+        self
       end
 
       protected
 
       def _read
-        raise NotImplementedError
-      end
-
-      def _read_all
         raise NotImplementedError
       end
     end

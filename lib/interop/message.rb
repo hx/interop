@@ -67,6 +67,10 @@ module Hx
         end
         raise Error::NotDecodable, 'Message is not in a decodable format'
       end
+
+      def dup
+        Message.new headers.to_h, body.dup
+      end
     end
   end
 end

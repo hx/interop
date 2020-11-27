@@ -23,13 +23,6 @@ module Hx
         @channel.get or raise EOFError
       end
 
-      def _read_all
-        while (obj = @channel.get)
-          yield obj
-        end
-        self
-      end
-
       def _write(message)
         @channel.put message
       end

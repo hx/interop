@@ -2,7 +2,8 @@ require 'interop/error'
 
 # TODO: the only reason this class exists is because SizedQueue doesn't allow a zero max.
 #   Figure out a way to block on the first push to a SizedQueue, and this messy situation
-#   can go away for good.
+#   can go away for good. In the meantime, a buffered version of this class is like a
+#   SizedQueue already, so that functionality can be removed.
 
 module Hx
   module Interop

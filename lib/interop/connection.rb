@@ -28,13 +28,8 @@ module Hx
         @reader.read
       end
 
-      def _read_all(&block)
-        @reader.read_all &block
-      end
-
       def _write(message)
         @writer.write message
-        self
       end
     end
   end

@@ -25,7 +25,6 @@ module Hx
           @stream.write message.body
           @stream.puts
         end
-        self
       end
     end
   end

@@ -34,14 +34,6 @@ module Hx
         end
       end
 
-      def _read_all
-        loop do
-          yield read
-        rescue EOFError
-          break
-        end
-      end
-
       private
 
       # @return [Hash]

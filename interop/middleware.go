@@ -11,6 +11,7 @@ type readInterceptor struct {
 	pipe        *Pipe
 }
 
+// TODO: consider a buffered version (like the Ruby version)
 func NewReadInterceptor(reader Reader, interceptor Interceptor) Reader {
 	if interceptor == nil {
 		panic("interceptor function must not be nil")

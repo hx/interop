@@ -11,6 +11,7 @@ module Hx
       # @param [Message] message
       def write(message, *args)
         _write Message.build(message, *args)
+        self
       end
 
       alias << write
