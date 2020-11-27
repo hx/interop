@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -e
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+set -x
+
+go test -race -timeout 10s ./interop
+bundle exec rspec --format progress
+bundle exec rubocop
