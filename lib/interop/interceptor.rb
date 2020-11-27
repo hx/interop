@@ -8,18 +8,21 @@ module Hx
     module Interceptor
       # :nodoc:
       class Builder
-        def initialize(stream)
-          @stream = stream
+        # @param [ReaderWriter, nil] connection
+        def initialize(connection)
+          @conn = connection
         end
 
-        def read(reader = @stream, &block)
+        # @param [Reader] reader
+        def read(reader = @conn, &block)
           raise 'Reader already declared' if @reader
           raise TypeError, 'Expected a Reader' unless reader.is_a? Reader
 
           @reader = Read.new(reader, &block)
         end
 
-        def write(writer = @stream, &block)
+        # @param [Writer] writer
+        def write(writer = @conn, &block)
           raise 'Reader already declared' if @writer
           raise TypeError, 'Expected a Writer' unless writer.is_a? Writer
 
@@ -33,17 +36,24 @@ module Hx
             block.call self
           end
 
-          @reader ||= @writer && @stream if @stream.is_a?(Reader)
-          @writer ||= @reader && @stream if @stream.is_a?(Writer)
+          consolidate!
 
           return Connection.new @reader, @writer if @reader && @writer
 
-          @reader || @writer || @stream or raise 'Nothing to build'
+          @reader || @writer || @conn or raise 'Nothing to build'
+        end
+
+        private
+
+        def consolidate!
+          @reader ||= @writer && @conn if @conn.is_a?(Reader)
+          @writer ||= @reader && @conn if @conn.is_a?(Writer)
         end
       end
 
-      def self.build(stream = nil, &block)
-        Builder.new(stream).build(&block)
+      # @param [ReaderWriter, nil] connection
+      def self.build(connection = nil, &block)
+        Builder.new(connection).build(&block)
       end
     end
   end

@@ -1,11 +1,12 @@
 require 'interop/stream_reader'
 require 'interop/stream_writer'
+require 'interop/reader_writer'
 
 module Hx
   module Interop
     # Combines a Reader and a Writer
     class Connection
-      include Reader, Writer
+      include ReaderWriter
 
       # @param [Reader, IO, StringIO] reader
       # @param [Writer, IO, StringIO] writer

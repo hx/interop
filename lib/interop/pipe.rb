@@ -1,13 +1,12 @@
 require 'interop/channel'
 require 'interop/message'
-require 'interop/reader'
-require 'interop/writer'
+require 'interop/reader_writer'
 
 module Hx
   module Interop
     # A message pipe. You can read exactly what is written to it.
     class Pipe
-      include Reader, Writer
+      include ReaderWriter
 
       def initialize(buffer_size = 0)
         @channel = Channel.new(buffer_size)
