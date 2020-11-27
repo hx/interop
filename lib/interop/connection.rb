@@ -17,11 +17,6 @@ module Hx
         @writer = writer
       end
 
-      def close
-        @reader.close
-        @writer.close
-      end
-
       protected
 
       def _read

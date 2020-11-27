@@ -8,7 +8,7 @@ module Hx::Interop
 
     context 'with normal shutdown' do
       after do
-        client_conn.close
+        pipes.each &:close
         subject.wait
       end
 
@@ -41,6 +41,7 @@ module Hx::Interop
         subject.on(/foo/) { raise 'ohmy' }
         server_conn.write 'Interop-Rpc-Class' => 'food'
         expect { subject.wait }.to raise_error RuntimeError, 'ohmy'
+        pipes.each &:close
       end
     end
   end

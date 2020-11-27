@@ -8,7 +8,7 @@ module Hx::Interop
 
     context 'with no error (graceful shutdown)' do
       after do
-        client_conn.close
+        pipes.each &:close
         subject.wait
       end
 

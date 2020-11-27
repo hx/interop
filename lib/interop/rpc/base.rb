@@ -9,7 +9,11 @@ module Hx
         def initialize(connection)
           @connection = connection
           @dispatcher = Dispatcher.new
-          @io_thread  = Thread.new { run }
+          @io_thread  = Thread.new do
+            run
+          rescue StandardError => e
+            @error = e
+          end
         end
 
         # TODO: custom exception handler?
@@ -40,8 +44,7 @@ module Hx
             Thread.new do
               yield request
             rescue StandardError => e
-              @error = e
-              @connection.close
+              @io_thread.raise e
             end
           end
         end
