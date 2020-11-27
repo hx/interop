@@ -5,6 +5,7 @@ require 'interop/version'
 require 'interop/connection'
 require 'interop/pipe'
 require 'interop/interceptor'
+require 'interop/middleware'
 require 'interop/rpc/client'
 require 'interop/rpc/server'
 
