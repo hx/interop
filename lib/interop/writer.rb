@@ -14,7 +14,9 @@ module Hx
         self
       end
 
-      alias << write
+      def <<(*args)
+        write *args
+      end
 
       protected
 

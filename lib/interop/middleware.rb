@@ -6,6 +6,18 @@ module Hx
     class Middleware
       include ReaderWriter
 
+      # :nodoc:
+      module BuildMessageOnWrite
+        def write(*args)
+          super Message.build(*args)
+        end
+      end
+
+      def self.inherited(subclass)
+        subclass.prepend BuildMessageOnWrite
+        super
+      end
+
       # @param [Array<Class>] classes
       # @param [ReaderWriter] connection
       def self.stack(*classes, connection)
@@ -22,6 +34,18 @@ module Hx
 
       def initialize(connection)
         @connection = connection
+      end
+
+      # Return the complete Middleware stack as an array, with this instance as the first item, and
+      # the core (or shallowest non-Middleware layer) as the last.
+      def stack
+        result = [self]
+        if @connection.is_a? Middleware
+          result.concat @connection.stack
+        else
+          result << @connection
+        end
+        result
       end
 
       protected
