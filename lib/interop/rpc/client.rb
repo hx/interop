@@ -8,7 +8,7 @@ module Hx
       class Client < Base
         attr_accessor :id_prefix
 
-        def initialize(connection)
+        def initialize(*)
           @next_id = 1
           @queues  = {}
           @mutex   = Mutex.new
@@ -18,8 +18,7 @@ module Hx
         # @param [Message] request
         # @return [Message]
         def call(request, *args)
-          request = {Headers::CLASS => request} if request.is_a?(String) || request.is_a?(Symbol)
-          request = Message.build(request, *args)
+          request = build_message(request, *args)
 
           queue = Queue.new
 

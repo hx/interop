@@ -1,3 +1,4 @@
+require 'interop/connection'
 require 'interop/rpc/dispatcher'
 require 'interop/rpc/controller'
 
@@ -6,8 +7,8 @@ module Hx
     module RPC
       # Base class for RPC Client and Server
       class Base
-        def initialize(connection)
-          @connection = connection
+        def initialize(reader, writer = reader)
+          @connection = Connection.build(reader, writer)
           @dispatcher = Dispatcher.new
           @io_thread  = Thread.new do
             run
@@ -34,6 +35,11 @@ module Hx
         protected
 
         attr_reader :dispatcher
+
+        def build_message(first, *rest)
+          first = {Headers::CLASS => first} if first.is_a?(String) || first.is_a?(Symbol)
+          Message.build first, *rest
+        end
 
         def write(*args)
           @connection.write *args

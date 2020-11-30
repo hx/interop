@@ -15,13 +15,12 @@ module Hx::Interop
       end
     end
 
-    describe '#body=' do
-      it 'treats hashes and arrays as JSON' do
-        expect { subject.body = {foo: 'ü'} }
-          .to change { subject.headers[Headers::CONTENT_TYPE] }
-          .to Message::Types::JSON
-        expect(subject.headers['Content-Length']).to eq '13' # 2 braces, 4 quotes, 1 colon, 3 ascii, 2 utf-8, 1 newline
-        expect(subject.body).to eq %({"foo":"ü"}\n)
+    describe '.json' do
+      it 'makes JSON messages' do
+        message = described_class.json foo: 'ü'
+        expect(message['Content-Type']).to eq 'application/json'
+        expect(message['Content-Length']).to eq '13' # 2 braces, 4 quotes, 1 colon, 3 ascii, 2 utf-8, 1 newline
+        expect(message.body).to eq %({"foo":"ü"}\n)
       end
     end
   end

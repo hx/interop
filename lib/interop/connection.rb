@@ -10,9 +10,20 @@ module Hx
 
       # @param [Reader, IO, StringIO] reader
       # @param [Writer, IO, StringIO] writer
-      def initialize(reader, writer = reader)
+      def self.build(reader, writer = reader)
+        return reader if reader.is_a?(ReaderWriter) && writer.equal?(reader)
+
         reader = StreamReader.new(reader) if reader.respond_to? :readline
         writer = StreamWriter.new(writer) if writer.respond_to? :puts
+
+        new reader, writer
+      end
+
+      # @param [Reader] reader
+      # @param [Writer] writer
+      def initialize(reader, writer)
+        raise ArgumentError, "Expected a #{Reader}" unless reader.is_a? Reader
+        raise ArgumentError, "Expected a #{Writer}" unless writer.is_a? Writer
 
         @reader = reader
         @writer = writer

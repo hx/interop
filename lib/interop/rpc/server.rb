@@ -8,7 +8,7 @@ module Hx
       class Server < Base
         # @param [Message] event
         def send(event, *args)
-          event = Message.build(event, *args)
+          event = build_message(event, *args)
 
           raise ArgumentError, 'Cannot send an event with an ID' if event.headers.key? Headers::ID
 

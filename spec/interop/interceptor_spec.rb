@@ -76,7 +76,7 @@ module Hx::Interop
     end
 
     describe '.build' do
-      let(:conn) { Connection.new StringIO.new, StringIO.new }
+      let(:conn) { Connection.build StringIO.new, StringIO.new }
 
       it 'can build a connection' do
         int = described_class.build conn do
