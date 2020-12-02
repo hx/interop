@@ -6,3 +6,7 @@ set -x
 go test -race -timeout 10s ./interop
 bundle exec rspec --format progress
 bundle exec rubocop
+(
+  cd integration
+  bundle exec rspec ./*_spec.rb --format documentation
+)

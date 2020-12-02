@@ -8,7 +8,7 @@ require 'json'
 
 require 'interop'
 
-include Hx::Interop
+include Hx::Interop # rubocop:disable Style/MixinUsage
 
 args = ARGV.dup
 main = false
@@ -21,7 +21,11 @@ end
 layer_name = args.shift
 
 sequence = []
-rec      = -> *things { sequence << [layer_name, *things].join(' ') }
+rec      = lambda do |*messages|
+  msg = [layer_name, *messages].join(' ')
+  sequence << msg
+  $stderr.puts msg # rubocop:disable Style/StderrPuts
+end
 
 if args.any?
   i, o     = Open3.popen2(*args)
@@ -56,6 +60,7 @@ else
     run.call
     rec.call 'trigger'
     server.send :finishing, layer_name: layer_name
+    rec.call 'done'
     Message.json sequence
   end
   server.wait

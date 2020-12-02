@@ -21,7 +21,10 @@ type Echo struct {
 
 func (e *Echo) rec(messages ...string) {
 	e.mutex.Lock()
-	e.sequence = append(e.sequence, e.layerName+" "+strings.Join(messages, " "))
+	msg := e.layerName + " " + strings.Join(messages, " ")
+	e.sequence = append(e.sequence, msg)
+	_, err := fmt.Fprintln(os.Stderr, msg)
+	check(err)
 	e.mutex.Unlock()
 }
 
@@ -98,6 +101,7 @@ func main() {
 			event := NewRpcMessage("finishing")
 			event.SetHeader("layer-name", e.layerName)
 			check(server.Send(event))
+			e.rec("done")
 			e.mutex.Lock()
 			check(response.SetJSONBody(e.sequence))
 			e.mutex.Unlock()
@@ -105,7 +109,7 @@ func main() {
 		check(server.Start())
 	}
 
-	closer.Close()
+	check(closer.Close())
 	<-clientDone
 
 	if e.main {
