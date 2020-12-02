@@ -44,7 +44,7 @@ end
 
 run = lambda do
   rec.call 'calling'
-  sequence << client.call(:dig, Message.json(["#{layer_name} called"])).decode
+  sequence << client.call_json(:dig, ["#{layer_name} called"]).decode
 end
 
 rec.call 'init'

@@ -34,6 +34,22 @@ module Hx::Interop
         server_conn.write 'Interop-Rpc-Class' => 'foo', 'woo' => 'hoo'
         expect(result.pop['woo']).to eq 'hoo'
       end
+
+      describe '#magic' do
+        it 'returns a magic proxy' do
+          expect(subject).to receive(:call).once.with(:foo_bar, :baz)
+          subject.magic.foo_bar :baz
+        end
+
+        it 'filters arguments through the given block' do
+          json_client = subject.magic &Message.method(:json)
+          expect(subject).to receive :call do |name, message|
+            expect(name).to eq :do
+            expect(message.body).to eq "[1,2,3]\n"
+          end
+          json_client.do [1, 2, 3]
+        end
+      end
     end
 
     context 'with an error in an event handler' do
