@@ -1,17 +1,20 @@
 package interop
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
 	"strings"
 	"sync"
+	"time"
 )
 
 type RpcClient struct {
 	bgRunner
 	Events   *EventDispatcher
 	IDPrefix string
+	Timeout  time.Duration
 	conn     Conn
 	nextId   uint64
 	results  map[string]chan Message
@@ -33,10 +36,15 @@ func (c *RpcClient) Run() (err error) {
 }
 
 func (c *RpcClient) Send(request Message) (response Message, err error) {
+	return c.SendContext(context.Background(), request)
+}
+
+func (c *RpcClient) SendContext(ctx context.Context, request Message) (response Message, err error) {
 	var (
 		idNum        uint64
 		idStr        string
-		responseChan = make(chan Message)
+		responseChan = make(chan Message, 1)
+		cancel       context.CancelFunc
 	)
 
 	c.mutex.Lock()
@@ -53,33 +61,59 @@ func (c *RpcClient) Send(request Message) (response Message, err error) {
 		return
 	}
 
-	response = <-responseChan
-	if response == nil {
-		return nil, io.ErrUnexpectedEOF
+	if c.Timeout > 0 {
+		ctx, cancel = context.WithTimeout(ctx, c.Timeout)
 	}
 
-	errs := response.GetHeaders(MessageErrorHeader)
-	if len(errs) > 0 {
-		err = errors.New(strings.Join(errs, "; "))
+	select {
+	case response = <-responseChan:
+		if response == nil {
+			err = io.ErrUnexpectedEOF
+		} else {
+			errs := response.GetHeaders(MessageErrorHeader)
+			if len(errs) > 0 {
+				err = errors.New(strings.Join(errs, "; "))
+			}
+		}
+	case <-ctx.Done():
+		c.releaseResponseChan(idStr)
+		err = ctx.Err()
 	}
+
+	if cancel != nil {
+		cancel()
+	}
+
 	return
 }
 
 func (c *RpcClient) Call(class string) (response Message, err error) {
-	return c.Send(NewRpcMessage(class))
+	return c.CallContext(context.Background(), class)
+}
+
+func (c *RpcClient) CallContext(ctx context.Context, class string) (response Message, err error) {
+	return c.SendContext(ctx, NewRpcMessage(class))
 }
 
 func (c *RpcClient) CallWithJSON(class string, body interface{}) (response Message, err error) {
+	return c.CallWithJSONContext(context.Background(), class, body)
+}
+
+func (c *RpcClient) CallWithJSONContext(ctx context.Context, class string, body interface{}) (response Message, err error) {
 	request := NewRpcMessage(class)
 	err = request.SetJSONBody(body)
 	if err != nil {
 		return
 	}
-	return c.Send(request)
+	return c.SendContext(ctx, request)
 }
 
 func (c *RpcClient) CallWithBinary(class string, body []byte) (response Message, err error) {
-	return c.Send(NewRpcMessage(class).SetBinaryBody(body))
+	return c.CallWithBinaryContext(context.Background(), class, body)
+}
+
+func (c *RpcClient) CallWithBinaryContext(ctx context.Context, class string, body []byte) (response Message, err error) {
+	return c.SendContext(ctx, NewRpcMessage(class).SetBinaryBody(body))
 }
 
 func (c *RpcClient) onReceiveMessage(message Message) error {
