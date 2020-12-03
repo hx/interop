@@ -4,7 +4,7 @@ Gem::Specification.new do |spec|
   spec.name          = 'interop'
   spec.version       = Hx::Interop::VERSION
   spec.authors       = ['Neil E. Pearson']
-  spec.email         = ['neil.pearson@bigcommerce.com']
+  spec.email         = ['neil@pearson.sydney']
 
   spec.summary       = 'Cross-language interop abstraction'
   spec.description   = 'Ruby implementation of hx/interop cross-language interop abstraction'
