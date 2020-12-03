@@ -13,19 +13,19 @@ type Reader interface {
 }
 
 type reader struct {
-	r     *bufio.Reader
-	mutex sync.Mutex
+	byteReader *bufio.Reader
+	mutex      sync.Mutex
 }
 
 func NewReader(r io.Reader) *reader {
-	return &reader{r: bufio.NewReader(r)}
+	return &reader{byteReader: bufio.NewReader(r)}
 }
 
-func (mr *reader) Read() (Message, error) {
-	mr.mutex.Lock()
-	defer mr.mutex.Unlock()
+func (r *reader) Read() (Message, error) {
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
 
-	headers, err := mr.readHeader()
+	headers, err := r.readHeader()
 	if err != nil {
 		return nil, err
 	}
@@ -41,13 +41,13 @@ func (mr *reader) Read() (Message, error) {
 			return nil, fmt.Errorf("invalid %s: %s", MessageContentLengthHeader, contentLengthStr)
 		}
 		message.body = make([]byte, contentLength)
-		_, err = io.ReadFull(mr.r, message.body)
+		_, err = io.ReadFull(r.byteReader, message.body)
 		if err != nil {
 			return nil, err
 		}
-		newline, err := mr.r.ReadByte()
+		newline, err := r.byteReader.ReadByte()
 		if newline == '\r' {
-			newline, err = mr.r.ReadByte()
+			newline, err = r.byteReader.ReadByte()
 		}
 		if err != nil {
 			return nil, err
@@ -58,7 +58,7 @@ func (mr *reader) Read() (Message, error) {
 		return message, nil
 	}
 
-	paragraph, err := mr.readParagraph()
+	paragraph, err := r.readParagraph()
 	if err != nil {
 		return nil, err
 	}
@@ -69,8 +69,8 @@ func (mr *reader) Read() (Message, error) {
 	return message, nil
 }
 
-func (mr *reader) readHeader() (Headers, error) {
-	paragraph, err := mr.readParagraph()
+func (r *reader) readHeader() (Headers, error) {
+	paragraph, err := r.readParagraph()
 	if err != nil {
 		return nil, err
 	}
@@ -86,10 +86,10 @@ func (mr *reader) readHeader() (Headers, error) {
 	return headers, nil
 }
 
-func (mr *reader) readParagraph() (paragraph [][]byte, err error) {
+func (r *reader) readParagraph() (paragraph [][]byte, err error) {
 	var line []byte
 	for {
-		line, err = mr.r.ReadBytes('\n')
+		line, err = r.byteReader.ReadBytes('\n')
 		if err != nil {
 			return nil, err
 		}

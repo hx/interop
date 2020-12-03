@@ -11,17 +11,17 @@ type Writer interface {
 }
 
 type writer struct {
-	w     io.Writer
-	mutex sync.Mutex
+	byteWriter io.Writer
+	mutex      sync.Mutex
 }
 
 func NewWriter(w io.Writer) *writer {
-	return &writer{w: w}
+	return &writer{byteWriter: w}
 }
 
 func (w *writer) Write(message Message) (err error) {
 	w.mutex.Lock()
-	_, err = WriteMessage(message, w.w)
+	_, err = WriteMessage(message, w.byteWriter)
 	w.mutex.Unlock()
 	return
 }
