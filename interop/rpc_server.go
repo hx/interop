@@ -14,7 +14,7 @@ func NewRpcServer(conn Conn) *RpcServer {
 	}
 }
 
-func (s *RpcServer) Start() (err error) {
+func (s *RpcServer) Run() (err error) {
 	s.err = make(chan error, 2)
 	var req Message
 	for {

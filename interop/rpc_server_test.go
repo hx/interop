@@ -25,8 +25,8 @@ func NewEnv() *Env {
 	}
 	env.client = NewRpcClient(CombineReaderWriter(env.inbound, env.outbound))
 	env.server = NewRpcServer(CombineReaderWriter(env.outbound, env.inbound))
-	go func() { env.clientErr <- env.client.Start() }()
-	go func() { env.serverErr <- env.server.Start() }()
+	go func() { env.clientErr <- env.client.Run() }()
+	go func() { env.serverErr <- env.server.Run() }()
 	return env
 }
 

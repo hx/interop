@@ -79,7 +79,7 @@ func main() {
 	}))
 
 	go func() {
-		check(e.client.Start())
+		check(e.client.Run())
 		clientDone <- struct{}{}
 	}()
 
@@ -106,7 +106,7 @@ func main() {
 			check(response.SetJSONBody(e.sequence))
 			e.mutex.Unlock()
 		}))
-		check(server.Start())
+		check(server.Run())
 	}
 
 	check(closer.Close())

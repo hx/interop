@@ -25,7 +25,7 @@ func NewRpcClient(conn Conn) *RpcClient {
 	}
 }
 
-func (c *RpcClient) Start() (err error) {
+func (c *RpcClient) Run() (err error) {
 	return ReadAllMessages(c.conn, c.onReceiveMessage)
 }
 
