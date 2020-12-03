@@ -9,6 +9,7 @@ import (
 )
 
 type RpcClient struct {
+	bgRunner
 	Events   *EventDispatcher
 	IDPrefix string
 	conn     Conn
@@ -17,12 +18,14 @@ type RpcClient struct {
 	mutex    sync.Mutex
 }
 
-func NewRpcClient(conn Conn) *RpcClient {
-	return &RpcClient{
+func NewRpcClient(conn Conn) (client *RpcClient) {
+	client = &RpcClient{
 		Events:  new(EventDispatcher),
 		conn:    conn,
 		results: make(map[string]chan Message),
 	}
+	client.bgRunner.runner = client
+	return
 }
 
 func (c *RpcClient) Run() (err error) {

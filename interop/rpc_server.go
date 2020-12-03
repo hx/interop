@@ -4,14 +4,17 @@ import "fmt"
 
 type RpcServer struct {
 	RpcDispatcher
+	bgRunner
 	conn Conn
 	err  chan error
 }
 
-func NewRpcServer(conn Conn) *RpcServer {
-	return &RpcServer{
+func NewRpcServer(conn Conn) (server *RpcServer) {
+	server = &RpcServer{
 		conn: conn,
 	}
+	server.bgRunner.runner = server
+	return
 }
 
 func (s *RpcServer) Run() (err error) {

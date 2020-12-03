@@ -18,15 +18,13 @@ type Env struct {
 
 func NewEnv() *Env {
 	env := &Env{
-		outbound:  NewPipe(),
-		inbound:   NewPipe(),
-		clientErr: make(chan error, 1),
-		serverErr: make(chan error, 1),
+		outbound: NewPipe(),
+		inbound:  NewPipe(),
 	}
 	env.client = NewRpcClient(CombineReaderWriter(env.inbound, env.outbound))
 	env.server = NewRpcServer(CombineReaderWriter(env.outbound, env.inbound))
-	go func() { env.clientErr <- env.client.Run() }()
-	go func() { env.serverErr <- env.server.Run() }()
+	env.client.Start()
+	env.server.Start()
 	return env
 }
 
@@ -50,7 +48,7 @@ func TestServer_Sanity(t *testing.T) {
 	Ok(t, err)
 	Equals(t, "pong", string(response.Body()))
 	Ok(t, env.outbound.Close())
-	Equals(t, io.EOF, <-env.serverErr)
+	Equals(t, io.EOF, env.server.Wait())
 	Ok(t, env.inbound.Close())
-	Equals(t, io.EOF, <-env.clientErr)
+	Equals(t, io.EOF, env.client.Wait())
 }
