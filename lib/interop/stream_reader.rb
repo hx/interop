@@ -21,15 +21,8 @@ module Hx
       def _read
         @mutex.synchronize do
           message      = Message.new(read_headers)
-          length       = message.headers[Headers::CONTENT_LENGTH]&.to_i
-          message.body =
-            if length&.positive?
-              @stream.read length
-            elsif length.nil?
-              read_paragraph.join
-            else
-              ''
-            end
+          length       = message.headers[Headers::CONTENT_LENGTH]
+          message.body = length.nil? || length.empty? ? read_paragraph.join : read_length(length.to_i)
           message
         end
       end
@@ -39,7 +32,7 @@ module Hx
       # @return [Hash]
       def read_headers
         read_paragraph.to_h do |line|
-          line.strip.split(/:\s*/).tap do |pair|
+          line.strip.split(/:\s*/, 2).tap do |pair|
             raise Error::InvalidHeader unless pair.length == 2
           end
         end
@@ -52,6 +45,15 @@ module Hx
 
           lines << line
         end
+      end
+
+      def read_length(length)
+        result = length.positive? ? @stream.read(length) : ''
+        sep    = @stream.read(1)
+        sep    = @stream.read(1) if sep == "\r"
+        raise Error::Unexpected, "Expected a newline after #{length} bytes" unless sep == "\n"
+
+        result
       end
     end
   end

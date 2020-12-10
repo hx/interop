@@ -36,10 +36,7 @@ func (r *reader) Read() (Message, error) {
 	)
 
 	if contentLengthStr != "" {
-		contentLength, err := strconv.ParseUint(contentLengthStr, 10, 64)
-		if err != nil {
-			return nil, fmt.Errorf("invalid %s: %s", MessageContentLengthHeader, contentLengthStr)
-		}
+		contentLength, _ := strconv.ParseUint(contentLengthStr, 10, 64)
 		message.body = make([]byte, contentLength)
 		_, err = io.ReadFull(r.byteReader, message.body)
 		if err != nil {

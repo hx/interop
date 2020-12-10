@@ -6,9 +6,12 @@ module Hx::Interop
 
       Howdy!
 
-      Content-length: 4
+      Content-length: 3
 
       OMG
+      Content-Length: 2
+
+      Hi
     TEXT
 
     subject { described_class.new StringIO.new(source) }
@@ -27,13 +30,12 @@ module Hx::Interop
       it 'parses bodies based on Content-Length' do
         subject.read
         message = subject.read
-        expect(message.headers.to_h).to eq 'Content-Length' => '4'
-        expect(message.body).to eq "OMG\n"
+        expect(message.headers.to_h).to eq 'Content-Length' => '3'
+        expect(message.body).to eq 'OMG'
       end
 
       it 'raises past EOF' do
-        subject.read
-        subject.read
+        3.times { subject.read }
         expect { subject.read }.to raise_error EOFError
       end
     end
@@ -41,7 +43,7 @@ module Hx::Interop
     describe '#read_all' do
       it 'reads all the messages' do
         all = subject.read_all.to_a
-        expect(all.map &:body).to eq %W[Howdy!\n OMG\n]
+        expect(all.map &:body).to eq %W[Howdy!\n OMG Hi]
       end
     end
 

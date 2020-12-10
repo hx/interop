@@ -7,6 +7,9 @@ module Hx
       class InvalidHeader < Fatal
       end
 
+      class Unexpected < Fatal
+      end
+
       class NotDecodable < self
       end
     end

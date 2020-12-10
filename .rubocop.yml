@@ -44,6 +44,9 @@ Lint/AmbiguousRegexpLiteral:
 Lint/AmbiguousOperator:
   Enabled: false
 
+Lint/RequireParentheses:
+  Enabled: false
+
 Layout/SpaceInLambdaLiteral:
   EnforcedStyle: require_space
 

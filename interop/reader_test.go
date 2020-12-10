@@ -12,14 +12,21 @@ func TestMessageReader_ReadMessage(t *testing.T) {
 	src := `Content-Length: 5
 
 abcde
-fg`
+Content-Length: 3
+
+xyz
+`
 
 	buf := bytes.NewBuffer([]byte(src))
-	scanner := interop.NewReader(buf)
+	reader := interop.NewReader(buf)
 
-	msg, err := scanner.Read()
+	msg, err := reader.Read()
 	Ok(t, err)
 	Equals(t, "abcde", string(msg.Body()))
+
+	msg, err = reader.Read()
+	Ok(t, err)
+	Equals(t, "xyz", string(msg.Body()))
 }
 
 func TestMessageReader_ReadMessage2(t *testing.T) {
