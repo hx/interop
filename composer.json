@@ -9,5 +9,18 @@
             "email": "neil@pearson.sydney"
         }
     ],
-    "require": {}
+    "autoload": {
+        "psr-4": {
+            "Hx\\": "php/"
+        }
+    },
+    "require": {
+        "php": "^8"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9"
+    },
+    "scripts": {
+        "test": "phpunit"
+    }
 }

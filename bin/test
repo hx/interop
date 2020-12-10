@@ -5,6 +5,7 @@ set -x
 
 go test -race -timeout 10s ./interop
 bundle exec rspec --format progress
+composer test
 bundle exec rubocop
 (
   cd integration
