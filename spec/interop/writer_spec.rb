@@ -8,9 +8,10 @@ module Hx::Interop
 
     describe '#write' do
       it 'writes the given message to its stream' do
+        message['foo'] = 'bar'
         message.body = 'foobar'
         subject.write message
-        expect(result).to eq "\nfoobar\n"
+        expect(result).to eq "Foo: bar\n\nfoobar\n"
       end
     end
   end
