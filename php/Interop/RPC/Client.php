@@ -9,33 +9,17 @@ use Hx\Interop\Error\AlreadyWaiting;
 use Hx\Interop\Header;
 use Hx\Interop\Matcher;
 use Hx\Interop\Message;
-use Hx\Interop\ReaderWriter;
 use InvalidArgumentException;
 
-class Client {
-    private ReaderWriter $conn;
+class Client extends Base {
     private bool $waiting = false;
     private array $responders = [];
-    private Dispatcher $dispatcher;
     private int $lastId = 0;
 
     /**
      * @var string Message ID prefix to be prepended to request IDs
      */
     public string $idPrefix = '';
-
-    /**
-     * @param ReaderWriter $conn
-     */
-    public function __construct(ReaderWriter $conn) {
-        $this->dispatcher = new Dispatcher();
-        $this->conn = $conn;
-    }
-
-    public function on($matcher, Closure $handler): self {
-        $this->dispatcher->on($matcher, $handler);
-        return $this;
-    }
 
     /**
      * @param $message
@@ -81,7 +65,8 @@ class Client {
         $wasWaiting = $this->waiting;
         $this->waiting = true;
         try {
-            while ($message = $this->conn->read()) {
+            while (true) {
+                $message = $this->conn->read();
                 if ($matcher->match($message)) {
                     return $message;
                 }
