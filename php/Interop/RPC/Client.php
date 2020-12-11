@@ -45,7 +45,7 @@ class Client {
      * @throws AlreadyClosed
      */
     public function call($message, ?Closure $responder = null): ?Message {
-        $id = $this->idPrefix . $this->lastId++;
+        $id = $this->idPrefix . ++$this->lastId;
         $message = $this->buildMessage($message);
         $message[Header::RPC_ID] = $id;
         $this->conn->write($message);

@@ -3,8 +3,6 @@
 namespace Hx\Interop;
 
 use ArrayAccess;
-use Closure;
-use InvalidArgumentException;
 use JsonException;
 
 class Message implements ArrayAccess {
@@ -31,10 +29,6 @@ class Message implements ArrayAccess {
         $result[Header::CONTENT_TYPE] = Message::JSON;
         $result[Header::CONTENT_LENGTH] = strlen($result->body);
         return $result;
-    }
-
-    public static function matcher($criteria): Matcher {
-
     }
 
     public Headers $headers;
@@ -67,5 +61,9 @@ class Message implements ArrayAccess {
 
     public function offsetUnset($offset) {
         unset($this->headers[$offset]);
+    }
+
+    public function __toString(): string {
+        return $this->headers . "\n" . $this->body . "\n";
     }
 }
