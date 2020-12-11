@@ -3,6 +3,7 @@
 namespace Hx\Interop\RPC;
 
 use Closure;
+use Hx\Interop\Conn;
 use Hx\Interop\Header;
 use Hx\Interop\Message;
 use Hx\Interop\ReaderWriter;
@@ -12,11 +13,11 @@ abstract class Base {
     protected Dispatcher $dispatcher;
 
     /**
-     * @param ReaderWriter $conn
+     * @param mixed ...$args
      */
-    public function __construct(ReaderWriter $conn) {
+    public function __construct(...$args) {
         $this->dispatcher = new Dispatcher();
-        $this->conn = $conn;
+        $this->conn = Conn::build(...$args);
     }
 
     public function on($matcher, Closure $handler): self {

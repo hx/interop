@@ -3,8 +3,11 @@
 namespace Hx\Interop;
 
 class Conn implements ReaderWriter {
-    public static function build($reader, $writer = null): self {
+    public static function build($reader, $writer = null): ReaderWriter {
         if ($writer === null) {
+            if ($reader instanceof ReaderWriter) {
+                return $reader;
+            }
             $writer = $reader;
         }
 
@@ -16,8 +19,8 @@ class Conn implements ReaderWriter {
 
     private static function castResource($object, $type) {
         $byteInterface = "Hx\Interop\Byte$type";
-        $byteClass     = "Hx\Interop\ByteStream$type";
         $streamClass   = "Hx\Interop\Stream$type";
+        $byteClass     = "Hx\Interop\ByteStream$type";
         if (is_resource($object) && get_resource_type($object) === 'stream') {
             $object = new $byteClass($object);
         }
