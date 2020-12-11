@@ -17,6 +17,6 @@ class ClassMatcher implements Matcher {
     }
 
     public function match(Message $message): bool {
-        return $message[Header::RPC_CLASS] == $this->class;
+        return $message[Header::RPC_CLASS] === $this->class;
     }
 }

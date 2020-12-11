@@ -77,7 +77,7 @@ class Client {
      * @return Message
      * @throws EOF
      */
-    public function waitUntil(Matcher $matcher): Message {
+    private function waitUntil(Matcher $matcher): Message {
         $wasWaiting = $this->waiting;
         $this->waiting = true;
         try {

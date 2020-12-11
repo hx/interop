@@ -56,7 +56,7 @@ class StreamReader implements Reader {
     private function readLength(int $length): string {
         $result = $length >= 0 ? $this->byteReader->readBytes($length) : '';
         $sep = $this->byteReader->readBytes(1);
-        if ($sep == "\r") {
+        if ($sep === "\r") {
             $sep = $this->byteReader->readBytes(1);
         }
         if ($sep !== "\n") {

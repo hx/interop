@@ -17,6 +17,6 @@ class IDMatcher implements Matcher {
     }
 
     public function match(Message $message): bool {
-        return $message[Header::RPC_ID] == $this->id;
+        return $message[Header::RPC_ID] === $this->id;
     }
 }
