@@ -5,6 +5,9 @@ namespace Hx\Interop;
 use Hx\Interop\Error\InvalidHeader;
 
 class Header {
+    public const RPC_ID = 'Interop-Rpc-Id';
+    public const RPC_CLASS = 'Interop-Rpc-Class';
+    public const RPC_ERROR = 'Interop-Rpc-Error';
     public const CONTENT_LENGTH = 'Content-Length';
     public const CONTENT_TYPE = 'Content-Type';
 
