@@ -94,7 +94,8 @@ class Client {
 
     private function handle(Message $message) {
         if ($id = $message[Header::RPC_ID]) {
-            if ($responder = $this->responders[$id]) {
+            if (isset($this->responders[$id])) {
+                $responder = $this->responders[$id];
                 unset($this->responders[$id]);
                 $responder($message);
                 return;
