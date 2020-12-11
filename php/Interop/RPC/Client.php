@@ -22,16 +22,26 @@ class Client extends Base {
     public string $idPrefix = '';
 
     /**
-     * @param $message
-     * @param Closure|null $responder
+     * @param mixed ...$args
      * @return Message|null
-     * @throws EOF
      * @throws AlreadyClosed
+     * @throws EOF
      */
-    public function call($message, ?Closure $responder = null): ?Message {
+    public function call(...$args): ?Message {
+        $responder = null;
+        if (!empty($args) && $args[count($args) - 1] instanceof Closure) {
+            $responder = array_pop($args);
+        }
+
+        if (empty($args)) {
+            throw new InvalidArgumentException();
+        }
+
+        $message = $this->buildMessage(...$args);
+
         $id = $this->idPrefix . ++$this->lastId;
-        $message = $this->buildMessage($message);
         $message[Header::RPC_ID] = $id;
+
         $this->conn->write($message);
 
         if ($responder) {
@@ -87,15 +97,5 @@ class Client extends Base {
             }
         }
         $this->dispatcher->dispatch($message);
-    }
-
-    private function buildMessage($message): Message {
-        if ($message instanceof Message) {
-            return $message;
-        }
-        if (is_string($message)) {
-            return new Message([Header::RPC_CLASS => $message]);
-        }
-        throw new InvalidArgumentException('Expected a Message or a string');
     }
 }

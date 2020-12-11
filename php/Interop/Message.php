@@ -9,6 +9,33 @@ class Message implements ArrayAccess {
     public const JSON = 'application/json';
     public const BINARY = 'application/octet-stream';
 
+    public static function build(...$args): self {
+        if (count($args) === 1 && $args[0] instanceof self) {
+            $message = array_shift($args);
+        } else {
+            $message = new self();
+        }
+
+        foreach($args as $arg) {
+            if ($arg === null) {
+                continue;
+            }
+            elseif (is_array($arg)) {
+                $message->headers->append($arg);
+            }
+            elseif ($arg instanceof self) {
+                $message->headers->append($arg->headers);
+                $message->body = $arg->body;
+            }
+            else {
+                $message->body = strval($arg);
+                $message[Header::CONTENT_LENGTH] = strlen($message->body);
+            }
+        }
+
+        return $message;
+    }
+
     /**
      * @param $object
      * @param array|null|Headers $headers
@@ -22,7 +49,7 @@ class Message implements ArrayAccess {
             JSON_THROW_ON_ERROR |
             JSON_UNESCAPED_UNICODE |
             JSON_UNESCAPED_SLASHES;
-        if($pretty) {
+        if ($pretty) {
             $flags |= JSON_PRETTY_PRINT;
         }
         $result->body = json_encode($object, $flags) . "\n";
