@@ -39,6 +39,6 @@ class Route implements Matcher {
     }
 
     public function handle(Message $message) {
-        ($this->handler)($message);
+        return ($this->handler)($message);
     }
 }

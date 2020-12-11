@@ -23,4 +23,13 @@ class Dispatcher {
             }
         }
     }
+
+    public function match(Message $event): ?Route {
+        foreach($this->routes as $route) {
+            if ($route->match($event)) {
+                return $route;
+            }
+        }
+        return null;
+    }
 }
