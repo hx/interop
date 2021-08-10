@@ -6,8 +6,8 @@ module Hx
       # Message dispatcher used by Client and Server.
       class Dispatcher
         Route = Struct.new :matcher, :handler do
-          def call(message)
-            handler[message]
+          def call(*args)
+            handler.call(*args)
           end
 
           def match?(message)

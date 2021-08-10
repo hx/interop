@@ -15,7 +15,7 @@ module Hx
           end
 
           klass = self
-          lambda do |message|
+          lambda do |message, _message_class|
             controller = klass.new(message)
             controller.__send__ action
             controller.response

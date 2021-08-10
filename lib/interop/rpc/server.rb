@@ -21,7 +21,7 @@ module Hx
 
         def run
           super do |request|
-            response = make_response(dispatcher.match(request)&.call request)
+            response = make_response(dispatcher.match(request)&.call request, request[Headers::CLASS])
             response[Headers::ID] = request[Headers::ID]
             write response
           rescue StandardError => e
