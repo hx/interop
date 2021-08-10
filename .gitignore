@@ -12,3 +12,6 @@
 
 /vendor/
 /.phpunit.*
+
+# Ruby
+/Gemfile.lock
