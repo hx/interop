@@ -10,6 +10,7 @@ module Hx
         def initialize(reader, writer = reader)
           @connection = Connection.build(reader, writer)
           @dispatcher = Dispatcher.new
+          yield self if block_given?
           @io_thread  = Thread.new do
             run
           rescue StandardError => e
