@@ -1,3 +1,5 @@
+require 'set'
+
 require 'interop/message'
 require 'interop/reader'
 
