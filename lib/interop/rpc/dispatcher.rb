@@ -43,7 +43,9 @@ module Hx
 
         def make_matcher(criteria)
           case criteria
-          when Proc
+          when Array, Set
+            make_array_matcher criteria
+          when Proc, Method
             criteria
           when String, Regexp
             -> message { criteria === message.headers[Headers::CLASS] }
@@ -52,6 +54,22 @@ module Hx
           else
             raise ArgumentError, 'Invalid message match criteria'
           end
+        end
+
+        def make_array_matcher(array)
+          if array.all? { |item| item.is_a?(String) || item.is_a?(Symbol) }
+            make_any_class_matcher Set.new(array.map(&:to_s)).freeze
+          else
+            make_any_matcher array.map(&method(:make_matcher))
+          end
+        end
+
+        def make_any_class_matcher(classes)
+          -> message { classes.include? message.headers[Headers::CLASS] }
+        end
+
+        def make_any_matcher(matchers)
+          -> message { matchers.any? { |c| c.match? message } }
         end
 
         def make_handler(*args, &block)
