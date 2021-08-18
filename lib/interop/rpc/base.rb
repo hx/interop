@@ -11,7 +11,7 @@ module Hx
           @connection = Connection.build(reader, writer)
           @dispatcher = Dispatcher.new
           yield self if block_given?
-          @io_thread  = Thread.new do
+          @io_thread = Thread.new do
             run
           rescue StandardError => e
             @error = e
