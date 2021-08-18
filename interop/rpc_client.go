@@ -95,25 +95,16 @@ func (c *RpcClient) CallContext(ctx context.Context, class string) (response Mes
 	return c.SendContext(ctx, NewRpcMessage(class))
 }
 
-func (c *RpcClient) CallWithJSON(class string, body interface{}) (response Message, err error) {
-	return c.CallWithJSONContext(context.Background(), class, body)
+func (c *RpcClient) CallWithContent(class string, contentType *ContentType, content interface{}) (response Message, err error) {
+	return c.CallWithContentContext(context.Background(), class, contentType, content)
 }
 
-func (c *RpcClient) CallWithJSONContext(ctx context.Context, class string, body interface{}) (response Message, err error) {
-	request := NewRpcMessage(class)
-	err = request.SetJSONBody(body)
-	if err != nil {
+func (c *RpcClient) CallWithContentContext(ctx context.Context, class string, contentType *ContentType, content interface{}) (response Message, err error) {
+	message := NewRpcMessage(class)
+	if err = contentType.EncodeTo(message, content); err != nil {
 		return
 	}
-	return c.SendContext(ctx, request)
-}
-
-func (c *RpcClient) CallWithBinary(class string, body []byte) (response Message, err error) {
-	return c.CallWithBinaryContext(context.Background(), class, body)
-}
-
-func (c *RpcClient) CallWithBinaryContext(ctx context.Context, class string, body []byte) (response Message, err error) {
-	return c.SendContext(ctx, NewRpcMessage(class).SetBinaryBody(body))
+	return c.SendContext(ctx, message)
 }
 
 func (c *RpcClient) onReceiveMessage(message Message) error {

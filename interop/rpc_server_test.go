@@ -38,7 +38,7 @@ func TestServer_Sanity(t *testing.T) {
 	env.server.HandleClassName("ping", ResponderFunc(func(request Message, response *MessageBuilder) {
 		Equals(t, "ping", request.GetHeader(MessageClassHeader))
 		Equals(t, "0", request.GetHeader(MessageIDHeader))
-		Ok(t, env.server.Send(new(MessageBuilder).SetBinaryBody([]byte("pinged"))))
+		Ok(t, env.server.Send(new(MessageBuilder).SetBody([]byte("pinged"))))
 		response.SetBody([]byte("pong"))
 	}))
 	Equals(t, 0, len(events))

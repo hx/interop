@@ -27,7 +27,8 @@ foobar!
 }
 
 func TestWriter_Write(t *testing.T) {
-	message := NewRpcMessage("foo").SetBinaryBody([]byte("bar"))
+	message := NewRpcMessage("foo")
+	Ok(t, message.SetContent(ContentTypeBinary, []byte("bar")))
 	expected := `
 Interop-Rpc-Class: foo
 Content-Type: application/octet-stream

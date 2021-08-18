@@ -1,11 +1,6 @@
 package interop
 
 const (
-	ContentTypeJSON   = "application/json"
-	ContentTypeBinary = "application/octet-stream"
-)
-
-const (
 	MessageIDHeader            = "Interop-Rpc-Id"
 	MessageClassHeader         = "Interop-Rpc-Class"
 	MessageErrorHeader         = "Interop-Error"
@@ -24,5 +19,5 @@ func (e Error) Error() string {
 const (
 	ErrPipeAlreadyClosed Error = "pipe already closed"
 	ErrEventHasID        Error = "event must not have an ID"
-	ErrNotDecodable      Error = "message is not in a decodable format"
+	ErrUnrecognisedType  Error = "unrecognised content type"
 )

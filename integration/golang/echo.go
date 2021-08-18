@@ -30,10 +30,10 @@ func (e *Echo) rec(messages ...string) {
 
 func (e *Echo) run() {
 	e.rec("calling")
-	resp, err := e.client.CallWithJSON("dig", []string{e.layerName + " called"})
+	resp, err := e.client.CallWithContent("dig", ContentTypeJSON, []string{e.layerName + " called"})
 	check(err)
 	var body []interface{}
-	check(Decode(resp, &body))
+	check(StdContentTypes.DecodeTo(resp, &body))
 	e.mutex.Lock()
 	e.sequence = append(e.sequence, body)
 	e.mutex.Unlock()
@@ -91,7 +91,7 @@ func main() {
 		server := NewRpcServer(StdioConn())
 		server.HandleClassName("dig", ResponderFunc(func(request Message, response *MessageBuilder) {
 			var seq []interface{}
-			check(Decode(request, &seq))
+			check(StdContentTypes.DecodeTo(request, &seq))
 			e.mutex.Lock()
 			e.sequence = append(e.sequence, seq...)
 			e.mutex.Unlock()
@@ -103,7 +103,7 @@ func main() {
 			check(server.Send(event))
 			e.rec("done")
 			e.mutex.Lock()
-			check(response.SetJSONBody(e.sequence))
+			check(response.SetContent(ContentTypeJSON, e.sequence))
 			e.mutex.Unlock()
 		}))
 		check(server.Run())

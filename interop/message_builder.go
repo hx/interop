@@ -1,7 +1,6 @@
 package interop
 
 import (
-	"encoding/json"
 	"strconv"
 )
 
@@ -41,19 +40,8 @@ func (b *MessageBuilder) AddError(err error) *MessageBuilder {
 	return b.AddHeader(MessageErrorHeader, err.Error())
 }
 
-func (b *MessageBuilder) SetJSONBody(data interface{}) (err error) {
-	b.setContentType(ContentTypeJSON)
-	b.body, err = json.Marshal(data)
-	b.setContentLength()
-	return
-}
-
-func (b *MessageBuilder) SetBinaryBody(data []byte) *MessageBuilder {
-	b.setContentType(ContentTypeBinary)
-	b.body = make([]byte, len(data))
-	copy(b.body, data)
-	b.setContentLength()
-	return b
+func (b *MessageBuilder) SetContent(contentType *ContentType, content interface{}) error {
+	return contentType.EncodeTo(b, content)
 }
 
 func (b *MessageBuilder) setContentLength() {
