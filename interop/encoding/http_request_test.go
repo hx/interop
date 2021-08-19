@@ -25,6 +25,17 @@ Hello!`[1:], "\n", "\r\n")
 	Equals(t, expected, string(result))
 }
 
+func TestHTTPRequestMarshaler_Marshal_Inbound(t *testing.T) {
+	req, _ := http.NewRequest("POST", "/baz?a=1", bytes.NewBuffer([]byte("Hello!")))
+	result, err := HTTPRequestMarshaler.Marshal(req)
+	Ok(t, err)
+	expected := strings.ReplaceAll(`
+POST /baz?a=1 HTTP/1.1
+
+Hello!`[1:], "\n", "\r\n")
+	Equals(t, expected, string(result))
+}
+
 func TestHTTPRequestMarshaler_Unmarshal(t *testing.T) {
 	original := `
 PATCH /foo/bar/baz?x=y HTTP/1.1

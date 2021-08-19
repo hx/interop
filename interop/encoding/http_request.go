@@ -20,7 +20,11 @@ func marshalHTTPRequest(value interface{}) (b []byte, err error) {
 		return nil, fmt.Errorf("expected value %T to be an http.Request or *http.Request", value)
 	}
 
-	return httputil.DumpRequestOut(req, true)
+	if req.URL.IsAbs() {
+		return httputil.DumpRequestOut(req, true)
+	}
+
+	return httputil.DumpRequest(req, true)
 }
 
 func unmarshalHTTPRequest(b []byte) (interface{}, error) {
