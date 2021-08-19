@@ -10,7 +10,7 @@ module Hx
       class Unexpected < Fatal
       end
 
-      class NotDecodable < self
+      class UnrecognisedContentType < self
       end
     end
   end

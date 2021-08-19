@@ -8,6 +8,7 @@ require 'interop/interceptor'
 require 'interop/middleware'
 require 'interop/rpc/client'
 require 'interop/rpc/server'
+require 'interop/content_type'
 
 module Hx
   module Interop

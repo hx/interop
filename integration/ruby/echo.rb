@@ -12,6 +12,7 @@ include Hx::Interop # rubocop:disable Style/MixinUsage
 
 args = ARGV.dup
 main = false
+json = ContentType::JSON
 
 if args.first == '--main'
   args.shift
@@ -44,7 +45,7 @@ end
 
 run = lambda do
   rec.call 'calling'
-  sequence << client.call_json(:dig, ["#{layer_name} called"]).decode
+  sequence << client.call(:dig, json.encode(["#{layer_name} called"])).decode(json)
 end
 
 rec.call 'init'
@@ -55,13 +56,13 @@ else
   $stdout.sync = true
   server       = RPC::Server.new($stdin, $stdout)
   server.on :dig do |request|
-    sequence.concat request.decode
+    sequence.concat request.decode(json)
     rec.call 'dig'
     run.call
     rec.call 'trigger'
     server.send :finishing, layer_name: layer_name
     rec.call 'done'
-    Message.json sequence
+    json.encode sequence
   end
   server.wait
 end

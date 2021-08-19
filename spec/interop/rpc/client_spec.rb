@@ -42,10 +42,10 @@ module Hx::Interop
         end
 
         it 'filters arguments through the given block' do
-          json_client = subject.magic &Message.method(:json)
+          json_client = subject.magic &ContentType::JSON.method(:encode)
           expect(subject).to receive :call do |name, message|
             expect(name).to eq :do
-            expect(message.body).to eq "[1,2,3]\n"
+            expect(message.body).to eq '[1,2,3]'
           end
           json_client.do [1, 2, 3]
         end

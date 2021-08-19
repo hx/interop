@@ -37,10 +37,6 @@ module Hx
 
         alias [] call
 
-        def call_json(message_class, unencoded_body, *args)
-          call message_class, Message.json(unencoded_body, *args)
-        end
-
         def magic(&block)
           Magic.new self, :call, &block
         end

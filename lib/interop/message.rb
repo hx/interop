@@ -1,21 +1,10 @@
-require 'json'
-
 require 'interop/headers'
 
 module Hx
   module Interop
     # Represents a single interop message, with headers and a body.
     class Message
-      module Types
-        JSON   = 'application/json'.freeze
-        BINARY = 'application/octet-stream'.freeze
-      end
-
       class << self
-        def json_parse_options
-          @json_parse_options ||= {}
-        end
-
         def build(*args)
           return args.first if args.one? && args.first.is_a?(Message)
 
@@ -24,10 +13,6 @@ module Hx
               assign_build_arg message, arg
             end
           end
-        end
-
-        def json(object, *args)
-          build JSON.generate(object) << "\n", {Headers::CONTENT_TYPE => Types::JSON}, *args
         end
 
         private
@@ -67,12 +52,9 @@ module Hx
         @body = value.to_s
       end
 
-      def decode
-        case @headers[Headers::CONTENT_TYPE]
-        when Types::JSON
-          return JSON.parse @body, self.class.json_parse_options
-        end
-        raise Error::NotDecodable, 'Message is not in a decodable format'
+      # @param [ContentType, ContentTypes] decoder
+      def decode(decoder)
+        decoder.decode self
       end
 
       def dup
