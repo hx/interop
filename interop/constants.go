@@ -17,7 +17,7 @@ func (e Error) Error() string {
 }
 
 const (
-	ErrPipeAlreadyClosed Error = "pipe already closed"
-	ErrEventHasID        Error = "event must not have an ID"
-	ErrUnrecognisedType  Error = "unrecognised content type"
+	ErrAlreadyClosed    Error = "already closed"
+	ErrEventHasID       Error = "event must not have an ID"
+	ErrUnrecognisedType Error = "unrecognised content type"
 )

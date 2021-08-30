@@ -17,7 +17,7 @@ func (p *Pipe) CloseWithError(err error) error {
 		close(p.message)
 		return nil
 	}
-	return ErrPipeAlreadyClosed
+	return ErrAlreadyClosed
 }
 
 func (p *Pipe) Close() error {
@@ -35,7 +35,7 @@ func (p *Pipe) Read() (message Message, err error) {
 
 func (p *Pipe) Write(message Message) (err error) {
 	if atomic.LoadInt32(&p.closed) == 1 {
-		return ErrPipeAlreadyClosed
+		return ErrAlreadyClosed
 	}
 	p.message <- message
 	return nil
