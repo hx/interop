@@ -39,7 +39,7 @@ func (d *RpcDispatcher) HandleClassRegexp(pattern *regexp.Regexp, responder Resp
 	d.Handle(MatchClassRegexp(pattern), responder)
 }
 
-func (d *RpcDispatcher) Dispatch(request Message, response *MessageBuilder) {
+func (d *RpcDispatcher) Respond(request Message, response *MessageBuilder) {
 	d.mutex.RLock()
 	routes := d.routes
 	d.mutex.RUnlock()

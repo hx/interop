@@ -38,7 +38,7 @@ func (s *RpcServer) Run() (err error) {
 					s.err <- err
 				}
 			}()
-			s.Dispatch(req, res)
+			s.Respond(req, res)
 		}()
 	}
 	return <-s.err
