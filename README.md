@@ -67,7 +67,7 @@ A pipe simple allows you to read whatever messages are written to it. Pipes can 
 
 Readers, writers, and connections generally can't be closed directly. Their underlying IO streams should be closed instead.
 
-Pipes, however, do not represent IO primitates, and so can be closed directly.
+Pipes, however, do not represent IO primitives, and so can be closed directly.
 
 ### RPC
 
@@ -96,5 +96,9 @@ TODO
 TODO
 
 ### PHP
+
+TODO
+
+### JavaScript
 
 TODO
