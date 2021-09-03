@@ -26,7 +26,7 @@ func (s *RpcServer) Run() (err error) {
 			s.err <- err
 			break
 		}
-		go func() {
+		go func(req Message) {
 			res := new(MessageBuilder)
 			defer func() {
 				ex := recover()
@@ -39,7 +39,7 @@ func (s *RpcServer) Run() (err error) {
 				}
 			}()
 			s.Respond(req, res)
-		}()
+		}(req)
 	}
 	return <-s.err
 }
