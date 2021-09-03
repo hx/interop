@@ -1,19 +1,43 @@
 {
-  "name": "interop",
+  "name": "@hxjs/interop",
   "version": "1.0.0",
   "description": "Make all the languages talk to each other",
-  "main": "index.js",
+  "main": "js/dist/index.js",
+  "types": "js/dist/index.d.ts",
+  "files": [
+    "js/dist/*.d.ts",
+    "js/dist/*.js"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "watch": "tsc -w",
+    "lint": "eslint js/src --ext .ts --fix",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/hx/interop.git"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Neil E. Pearson",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/hx/interop/issues"
   },
-  "homepage": "https://github.com/hx/interop#readme"
+  "homepage": "https://github.com/hx/interop#readme",
+  "directories": {
+    "lib": "lib",
+    "test": "tests"
+  },
+  "prepublish": "tsc",
+  "keywords": [],
+  "devDependencies": {
+    "@testing-library/jest-dom": "^5.14.1",
+    "@types/jest": "^27.0.1",
+    "@typescript-eslint/eslint-plugin": "^4.30.0",
+    "@typescript-eslint/parser": "^4.30.0",
+    "eslint": "^7.32.0",
+    "jest": "^27.1.0",
+    "ts-jest": "^27.0.5",
+    "typescript": "^4.4.2"
+  }
 }
