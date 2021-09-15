@@ -1,7 +1,7 @@
 import { Marshaler } from './Marshaler'
 
 export const jsonMarshaler: Marshaler = {
-  async marshal(obj: unknown) {
+  async marshal(obj) {
     return new Blob([JSON.stringify(obj === undefined ? null : obj)])
   },
 
@@ -19,15 +19,15 @@ const isBlobPart = (obj: unknown): obj is BlobPart =>
   typeof obj === 'string' ||
   (typeof obj === 'object' && obj !== null && blobParts.some(t => obj instanceof t))
 
-export const nullMarshaler: Marshaler = {
-  async marshal(obj: unknown) {
+export const nullMarshaler: Marshaler<Blob, BlobPart> = {
+  async marshal(obj) {
     if (!isBlobPart(obj)) {
       obj = String(obj)
     }
-    return new Blob([obj as BlobPart])
+    return new Blob([obj])
   },
 
-  async unmarshal(blob: Blob) {
+  async unmarshal(blob) {
     return blob
   }
 }

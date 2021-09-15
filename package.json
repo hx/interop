@@ -31,6 +31,7 @@
   "prepublish": "tsc",
   "keywords": [],
   "devDependencies": {
+    "@testing-library/dom": "^8.5.0",
     "@testing-library/jest-dom": "^5.14.1",
     "@types/jest": "^27.0.1",
     "@typescript-eslint/eslint-plugin": "^4.30.0",
