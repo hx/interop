@@ -23,6 +23,33 @@ describe('guards', () => {
     expect(g.object(() => 0)).toBe(false)
     expect(g.function(() => 0)).toBe(true)
     expect(g.function(0)).toBe(false)
+    expect(g.unknown(0)).toBe(true)
+    expect(g.unknown(undefined)).toBe(true)
+    expect(g.unknown(true)).toBe(true)
+
+    expect(g.truthy(true)).toBe(true)
+    expect(g.truthy(-1)).toBe(true)
+    expect(g.truthy('a')).toBe(true)
+    expect(g.truthy({})).toBe(true)
+    expect(g.truthy([])).toBe(true)
+    expect(g.truthy(false)).toBe(false)
+    expect(g.truthy(0)).toBe(false)
+    expect(g.truthy('')).toBe(false)
+    expect(g.truthy(null)).toBe(false)
+    expect(g.truthy(undefined)).toBe(false)
+    expect(g.truthy(NaN)).toBe(false)
+
+    expect(g.falsy(true)).toBe(false)
+    expect(g.falsy(-1)).toBe(false)
+    expect(g.falsy('a')).toBe(false)
+    expect(g.falsy({})).toBe(false)
+    expect(g.falsy([])).toBe(false)
+    expect(g.falsy(false)).toBe(true)
+    expect(g.falsy(0)).toBe(true)
+    expect(g.falsy('')).toBe(true)
+    expect(g.falsy(null)).toBe(true)
+    expect(g.falsy(undefined)).toBe(true)
+    expect(g.falsy(NaN)).toBe(true)
 
     expect(g.arrayOf(g.number)([1,2,3])).toBe(true)
     expect(g.arrayOf(g.number)([])).toBe(true)
@@ -48,6 +75,31 @@ describe('guards', () => {
     expect(g.functionOf(1)(() => 0)).toBe(false)
     expect(g.functionOf(1)((a: unknown) => 0)).toBe(true)
     expect(g.functionOf(1)((a: unknown, b: unknown) => 0)).toBe(false)
+
+    expect(g('a', null)(null)).toBe(true)
+    expect(g('a', null)('a')).toBe(true)
+    expect(g('a', null)('b')).toBe(false)
+    expect(g('a', null)('undefined')).toBe(false)
+  })
+
+  it('eats structs', () => {
+    const check = g.struct({
+      foo: g.number,
+      bar: g.string
+    }, {
+      required:   ['foo'],
+      additional: g.null
+    }).optional
+
+    expect(check({foo: 1, bar: 'a'})).toBe(true)
+    expect(check({foo: 1, bar: undefined})).toBe(false)
+    expect(check({foo: 1})).toBe(true)
+    expect(check({bar: 'a'})).toBe(false)
+    expect(check({foo: 1, bar: 2})).toBe(false)
+    expect(check({foo: 1, baz: 'a'})).toBe(false)
+    expect(check({foo: 1, baz: null})).toBe(true)
+    expect(check({})).toBe(false)
+    expect(check(undefined)).toBe(true)
   })
 
   it('can combine types', () => {

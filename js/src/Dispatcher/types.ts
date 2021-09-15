@@ -4,7 +4,7 @@ import { Message } from '../Message'
 export type Handler<HeadersType extends Headers = Headers, EventType = Message<HeadersType>> =
   (event: EventType, headers: HeadersType) => void
 
-export type Matcher<HeadersType = Message> =
+export type Matcher<HeadersType extends Headers = Headers> =
   (message: Message<HeadersType>) => boolean
 
 export interface Route<HeadersType extends Headers = Headers, EventType = Message<HeadersType>> {

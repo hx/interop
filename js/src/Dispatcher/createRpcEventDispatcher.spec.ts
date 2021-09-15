@@ -21,7 +21,7 @@ describe(createRpcEventDispatcher, () => {
       Array.isArray(obj) &&
       obj.every(isPerson)
 
-    const {namedSubscribers, dispatch} = createRpcEventDispatcher(ContentTypes.json, {
+    const {namedSubscribers, dispatch} = createRpcEventDispatcher({
       onAdd:   ['add', isPerson],
       onLeave: isPeople
     })

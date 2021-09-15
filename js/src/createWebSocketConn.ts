@@ -19,7 +19,7 @@ const isPartialWebSocket = (obj: unknown): obj is PartialWebSocket =>
   typeof obj.send === 'function' &&
   typeof obj.addEventListener === 'function'
 
-interface CreateWebSocketConn {
+export interface CreateWebSocketConn {
   (websocket: PartialWebSocket): Conn
   (url: string): Conn
   (options: PersistentWebSocketOptions): Conn

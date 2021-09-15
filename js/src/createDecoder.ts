@@ -4,7 +4,7 @@ import { Header } from './Header'
 import { Headers } from './Headers'
 import { Message } from './Message'
 
-export type Decoder<HeadersType extends Headers = Headers, T = unknown> = (message: Message<HeadersType>) => Promise<T>
+export type Decoder<HeadersType extends Headers = Headers, DecodedType = unknown> = (message: Message<HeadersType>) => Promise<DecodedType>
 
 export const createDecoder = <T, HeadersType extends Headers = Headers>(...contentTypes: ContentType<T, unknown>[]): Decoder<HeadersType, T> =>
   async (message) => {

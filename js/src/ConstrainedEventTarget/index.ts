@@ -1,3 +1,3 @@
 export * from './ConstrainedEventTarget'
 export * from './createConstrainedEventTarget'
-export { EventMapBase } from './types'
+export { EventMapBase, Event } from './types'

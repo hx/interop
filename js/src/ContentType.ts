@@ -10,3 +10,5 @@ export const isContentType = (obj: unknown): obj is ContentType =>
   isObj(obj) &&
   typeof obj.name === 'string' &&
   isMarshaler(obj.marshaler)
+
+export const NO_CONTENT = {}

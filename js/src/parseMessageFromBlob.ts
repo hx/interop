@@ -1,6 +1,6 @@
 import { Header } from './Header'
 import { Message } from './Message'
-import { mapToObj } from './utilities'
+import { canonicalizeKey, mapToObj } from './utilities'
 import { Headers } from './Headers'
 
 const CarriageReturn = '\r'.charCodeAt(0)
@@ -30,9 +30,6 @@ const extractHeadersFromBlob = async (blob: Blob): Promise<Blob> => {
 
   return headerView
 }
-
-const canonicalizeKey = (key: string) =>
-  key.split(/[-_\s]+/).map(s => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase()).join('-')
 
 export const parseMessageFromBlob = async (blob: Blob): Promise<Message> => {
   const headerBlob   = await extractHeadersFromBlob(blob)
