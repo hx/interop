@@ -1,15 +1,14 @@
 {
   "name": "@hxjs/interop",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Make all the languages talk to each other",
   "main": "js/dist/index.js",
   "types": "js/dist/index.d.ts",
   "files": [
-    "js/dist/*.d.ts",
-    "js/dist/*.js"
+    "js/dist/**/*.{d.ts,js}"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "rm -rf js/dist && tsc",
     "watch": "tsc -w",
     "lint": "eslint js/src --ext .ts --fix",
     "test": "jest"
@@ -28,7 +27,6 @@
     "lib": "lib",
     "test": "tests"
   },
-  "prepublish": "tsc",
   "keywords": [],
   "devDependencies": {
     "@testing-library/dom": "^8.5.0",
