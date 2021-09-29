@@ -103,29 +103,29 @@ These examples are all runnable from the [/examples](examples) directory.
 
 ```go
 import (
-	"github.com/hx/interop/interop"
-	"os"
-	"strconv"
-	"time"
+    "github.com/hx/interop/interop"
+    "os"
+    "strconv"
+    "time"
 )
 
 func main() {
-	reader, _ := os.OpenFile("a", os.O_RDONLY, 0)
-	writer, _ := os.OpenFile("b", os.O_WRONLY|os.O_SYNC, 0)
+    reader, _ := os.OpenFile("a", os.O_RDONLY, 0)
+    writer, _ := os.OpenFile("b", os.O_WRONLY|os.O_SYNC, 0)
 
-	server := interop.NewRpcServer(interop.BuildConn(reader, writer))
+    server := interop.NewRpcServer(interop.BuildConn(reader, writer))
 
-	server.HandleClassName("countdown", interop.ResponderFunc(func(request interop.Message, _ *interop.MessageBuilder) {
-		num, _ := strconv.Atoi(request.GetHeader("ticks"))
-		for i := 1; i <= num; i++ {
-			time.Sleep(time.Second)
-			event := interop.NewRpcMessage("tick")
-			event.SetContent(interop.ContentTypeJSON, i)
-			server.Send(event)
-		}
-	}))
+    server.HandleClassName("countdown", interop.ResponderFunc(func(request interop.Message, _ *interop.MessageBuilder) {
+        num, _ := strconv.Atoi(request.GetHeader("ticks"))
+        for i := 1; i <= num; i++ {
+            time.Sleep(time.Second)
+            event := interop.NewRpcMessage("tick")
+            event.SetContent(interop.ContentTypeJSON, i)
+            server.Send(event)
+        }
+    }))
 
-	server.Run()
+    server.Run()
 }
 ```
 
@@ -133,32 +133,32 @@ func main() {
 
 ```go
 import (
-	"fmt"
-	"github.com/hx/interop/interop"
-	"os"
+    "fmt"
+    "github.com/hx/interop/interop"
+    "os"
 )
 
 func main() {
-	writer, _ := os.OpenFile("a", os.O_WRONLY|os.O_SYNC, 0)
-	reader, _ := os.OpenFile("b", os.O_RDONLY, 0)
+    writer, _ := os.OpenFile("a", os.O_WRONLY|os.O_SYNC, 0)
+    reader, _ := os.OpenFile("b", os.O_RDONLY, 0)
 
-	client := interop.NewRpcClient(interop.BuildConn(reader, writer))
+    client := interop.NewRpcClient(interop.BuildConn(reader, writer))
 
-	client.Events.HandleClassName("tick", interop.HandlerFunc(func(event interop.Message) error {
-		i := 0
-		interop.ContentTypeJSON.DecodeTo(event, &i)
-		fmt.Println("Tick", i)
-		if i == 5 {
-			writer.Close()
-		}
-		return nil
-	}))
+    client.Events.HandleClassName("tick", interop.HandlerFunc(func(event interop.Message) error {
+        i := 0
+        interop.ContentTypeJSON.DecodeTo(event, &i)
+        fmt.Println("Tick", i)
+        if i == 5 {
+            writer.Close()
+        }
+        return nil
+    }))
 
-	client.Start()
+    client.Start()
 
-	client.Send(interop.NewRpcMessage("countdown").AddHeader("ticks", "5"))
+    client.Send(interop.NewRpcMessage("countdown").AddHeader("ticks", "5"))
 
-	client.Wait()
+    client.Wait()
 }
 ```
 
