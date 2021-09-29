@@ -93,13 +93,15 @@ Client and server processes talk to each other using two FIFOs called `a` and `b
 
 Clients send a single RPC request, `countdown`, to servers, with a single header, `ticks`, as an integer. Servers respond to `countdown` by sending one `tick` event per second back to the client, up to the number in the request's `ticks` header.
 
-Clients handle the `tick` event by writing `Tick _n_` to their STDOUT. After receiving their final tick, they close FIFO `a`, which causes the server to exit, which in turn causes the client to exit.
+Clients handle the `tick` event by writing `Tick n` to their STDOUT. After receiving their final tick, they close FIFO `a`, which causes the server to exit, which in turn causes the client to exit.
 
-These examples are all runnable from the [/examples](examples) directory.
+These examples are all runnable from the [examples](examples) directory.
 
-### Golang
+### Go
 
 #### Server
+
+<!-- When editing Go examples, replace tabs with four spaces. -->
 
 ```go
 import (
