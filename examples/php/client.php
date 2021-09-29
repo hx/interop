@@ -8,8 +8,9 @@ $reader = fopen('b', 'r');
 $client = new Hx\Interop\RPC\Client($reader, $writer);
 
 $client->on('tick', function (Hx\Interop\Message $message) use ($writer) {
-    echo "Tick $message->body\n";
-    if ($message->body == 5) {
+    $num = json_decode($message->body);
+    echo "Tick $num\n";
+    if ($num === 5) {
         fclose($writer);
     }
 });

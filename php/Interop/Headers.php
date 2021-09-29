@@ -101,7 +101,10 @@ class Headers implements ArrayAccess, Countable, IteratorAggregate {
     }
 
     public function append($val): self {
-        if (is_array($val) || $val instanceof Headers) {
+        if ($val instanceof Headers) {
+            array_push($this->headers, ...$val);
+        }
+        elseif (is_array($val)) {
             foreach ($val as $k => $v) {
                 $this->add($k, $v);
             }

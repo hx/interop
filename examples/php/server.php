@@ -11,7 +11,7 @@ $server->on('countdown', function (Hx\Interop\Message $message) use($server) {
     $num = (int) $message['ticks'];
     for ($i = 1; $i <= $num; $i++) {
         sleep(1);
-        $server->send('tick', $i);
+        $server->send('tick', Hx\Interop\Message::json($i));
     }
 });
 
