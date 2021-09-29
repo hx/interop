@@ -53,7 +53,7 @@ module Hx
       end
 
       # @param [ContentType, ContentTypes] decoder
-      def decode(decoder)
+      def decode(decoder = ContentType::STANDARD)
         decoder.decode self
       end
 
