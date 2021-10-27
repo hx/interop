@@ -53,8 +53,7 @@ rec.call 'init'
 if main
   run.call
 else
-  $stdout.sync = true
-  server       = RPC::Server.new($stdin, $stdout)
+  server = RPC::Server.new($stdin, $stdout)
   server.on :dig do |request|
     sequence.concat request.decode(json)
     rec.call 'dig'

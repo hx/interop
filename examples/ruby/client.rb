@@ -3,8 +3,6 @@ require 'interop'
 writer = File.open('a', 'w')
 reader = File.open('b', 'r')
 
-writer.sync = true
-
 client = Hx::Interop::RPC::Client.new(reader, writer)
 
 client.on 'tick' do |event|

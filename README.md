@@ -174,8 +174,6 @@ require 'interop'
 reader = File.open('a', 'r')
 writer = File.open('b', 'w')
 
-writer.sync = true
-
 server = Hx::Interop::RPC::Server.new(reader, writer)
 
 server.on 'countdown' do |request|
@@ -196,8 +194,6 @@ require 'interop'
 
 writer = File.open('a', 'w')
 reader = File.open('b', 'r')
-
-writer.sync = true
 
 client = Hx::Interop::RPC::Client.new(reader, writer)
 

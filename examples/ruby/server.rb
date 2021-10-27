@@ -3,8 +3,6 @@ require 'interop'
 reader = File.open('a', 'r')
 writer = File.open('b', 'w')
 
-writer.sync = true
-
 server = Hx::Interop::RPC::Server.new(reader, writer)
 
 server.on 'countdown' do |request|

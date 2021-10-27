@@ -1,17 +1,12 @@
 require 'interop/message'
 require 'interop/writer'
+require 'interop/stream_adapter'
 
 module Hx
   module Interop
     # Writes messages to a stream (e.g. STDOUT)
-    class StreamWriter
+    class StreamWriter < StreamAdapter
       include Writer
-
-      # @param [IO, StringIO] stream
-      def initialize(stream)
-        @stream = stream
-        @mutex  = Mutex.new
-      end
 
       protected
 

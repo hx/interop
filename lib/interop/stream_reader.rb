@@ -2,21 +2,16 @@ require 'set'
 
 require 'interop/message'
 require 'interop/reader'
+require 'interop/stream_adapter'
 
 module Hx
   module Interop
     # Reads messages from a stream (e.g. STDIN)
-    class StreamReader
+    class StreamReader < StreamAdapter
       include Reader
 
       # Acceptable line terminators
       NEWLINES = Set.new(%W[\n \r\n]).freeze
-
-      # @param [IO, StringIO] stream
-      def initialize(stream)
-        @stream = stream
-        @mutex  = Mutex.new
-      end
 
       protected
 
