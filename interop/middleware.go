@@ -1,5 +1,7 @@
 package interop
 
+import "sync"
+
 // An Interceptor receives a Message and a Writer, and should write a modified version of the message to the writer.
 // Messages can be removed from a message bus by skipping Write() calls. Multiple writes within a single intercept are
 // permitted. Writing the message once, without modification, to the writer, is equivalent to having no interceptor.
@@ -9,9 +11,11 @@ type readInterceptor struct {
 	reader      Reader
 	interceptor Interceptor
 	pipe        *Pipe
+	startOnce   sync.Once
 }
 
 // TODO: consider a buffered version (like the Ruby version)
+
 func NewReadInterceptor(reader Reader, interceptor Interceptor) Reader {
 	if interceptor == nil {
 		panic("interceptor function must not be nil")
@@ -21,11 +25,11 @@ func NewReadInterceptor(reader Reader, interceptor Interceptor) Reader {
 		interceptor: interceptor,
 		pipe:        NewPipe(),
 	}
-	go r.relay()
 	return r
 }
 
 func (r *readInterceptor) Read() (message Message, err error) {
+	r.startOnce.Do(func() { go r.relay() })
 	return r.pipe.Read()
 }
 
