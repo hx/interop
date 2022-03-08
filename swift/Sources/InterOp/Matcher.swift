@@ -1,7 +1,7 @@
 import Foundation
 
-enum Matcher {
-    typealias matchFunc = (_: Message) -> Bool
+public enum Matcher {
+    public typealias matchFunc = (_: Message) -> Bool
     
     case className(name: String),
          classPattern(pattern: NSRegularExpression),

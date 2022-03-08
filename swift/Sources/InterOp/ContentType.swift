@@ -1,6 +1,6 @@
 import Foundation
 
-class ContentType {
+public class ContentType {
     static let json = ContentType("application/json", JsonMarshaler())
     static let binary = ContentType("application/octet-stream", BinaryMarshaler())
     
@@ -13,7 +13,8 @@ class ContentType {
     }
     
     func encodeTo<T : Encodable>(_ builder: MessageBuilder, _ value: T) throws {
-        builder.body = try marshaler.marshal(value)
-        
+        _ = builder
+            .setBody(try marshaler.marshal(value))
+            .setContentType(name)
     }
 }

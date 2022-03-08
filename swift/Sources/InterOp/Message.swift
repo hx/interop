@@ -1,6 +1,6 @@
 import Foundation
 
-protocol Message {
+public protocol Message {
     func getHeader(_ headerName: String) -> String?
     func getHeaders(_ headerName: String) -> [String]
     func getAllHeaders() -> Headers

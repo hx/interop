@@ -1,15 +1,28 @@
 import Foundation
 
-actor RpcServer {
-    private(set) var responder = RpcResponder()
+public actor RpcServer {
+    public typealias setupClosure = (_ responder: RpcResponder) -> Void
+    
+    private let responder = RpcResponder()
     private let conn: Conn
     private var task: Task<Error?, Never>?
     
-    init(_ conn: Conn) {
-        self.conn = conn
+    /**
+     Returns a new instance of `RpcServer` that reads from standard input, and writes to standard output.
+     */
+    public static func stdio(_ setup: setupClosure) -> RpcServer {
+        return self.init(ReaderWriter(
+            FileReader(file: FileHandle.standardInput),
+            FileWriter(file: FileHandle.standardOutput)
+        ), setup)
     }
     
-    func start() throws {
+    init(_ conn: Conn, _ setup: setupClosure) {
+        self.conn = conn
+        setup(responder)
+    }
+    
+    public func start() throws {
         if task != nil {
             throw Errors.alreadyRunning
         }
@@ -18,7 +31,7 @@ actor RpcServer {
                 while let request = try await self.conn.read() {
                     Task {
                         let response = MessageBuilder()
-                        await self.responder.respond(to: request, with: response)
+                        self.responder.respond(to: request, with: response)
                         try await self.conn.write(response.setHeader(Header.ID, request.getHeader(Header.ID)))
                     }
                 }
@@ -29,11 +42,11 @@ actor RpcServer {
         }
     }
     
-    func wait() async -> Error? {
+    public func wait() async -> Error? {
         return await task?.value
     }
     
-    func send(_ event: Message) async throws {
+    public func send(_ event: Message) async throws {
         if event.getHeader(Header.ID) != nil {
             throw Errors.eventHasID
         }

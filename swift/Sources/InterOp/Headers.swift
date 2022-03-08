@@ -1,6 +1,6 @@
 import Foundation
 
-struct Headers : Sequence {
+public struct Headers : Sequence {
     private var headers: [Header]
     
     init(_ headers: Header...) {
@@ -11,7 +11,7 @@ struct Headers : Sequence {
         self.headers = headers
     }
     
-    func makeIterator() -> IndexingIterator<[Header]> {
+    public func makeIterator() -> IndexingIterator<[Header]> {
         return headers.makeIterator()
     }
     

@@ -1,6 +1,6 @@
 import Foundation
 
-struct Header {
+public struct Header {
     static let ID = "Interop-Rpc-Id",
                Class = "Interop-Rpc-Class",
                Error = "Interop-Error",
@@ -25,7 +25,7 @@ struct Header {
         return self.init(parts[0], parts[1])
     }
     
-    static internal func canonicalizeName(_ name: String) -> String {
+    static func canonicalizeName(_ name: String) -> String {
         return name
             .split { $0 == "-" || $0 == "_" }
             .map { $0.prefix(1).uppercased() + $0.dropFirst().lowercased() }
