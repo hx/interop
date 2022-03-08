@@ -1,50 +1,54 @@
 import XCTest
 @testable import InterOp
 
-class BufferedByteReaderTests: XCTestCase {
+class BufferedByteReaderTests: TestCase {
     var abcde = BufferedByteReader(DataReadWriter())
     
     override func setUp() {
         abcde = BufferedByteReader(DataReadWriter("abcde".data(using: .ascii)!, readChunkSize: 2))
     }
     
-    func testReadExactly() {
-        XCTAssertEqual("abc", str(try! abcde.read(exactly: 3)!))
-        XCTAssertEqual("d", str(try! abcde.read(exactly: 1)!))
-        XCTAssertThrowsError(try abcde.read(exactly: 2)) { error in
+    func testReadExactly() async {
+        eq("abc", try! await abcde.read(exactly: 3))
+        eq("d", try! await abcde.read(exactly: 1))
+        await assertAsyncThrowsError(try await abcde.read(exactly: 2)) { error in
             XCTAssertEqual(Errors.alreadyClosed, error as! Errors)
         }
     }
     
-    func testReadUntil() {
-        XCTAssertEqual("abc", str(try! abcde.read(until: "c")))
-        XCTAssertEqual("de", str(try! abcde.read(exactly: 2)))
-        XCTAssertNil(try! abcde.read())
+    func testReadUntil() async {
+        eq("abc", try! await abcde.read(until: "c"))
+        eq("de", try! await abcde.read(exactly: 2))
+        isNil(try! await abcde.read())
     }
     
-    func testReadUntilAtMost() {
-        XCTAssertEqual("ab", str(try! abcde.read(until: "z", atMost: 2)))
-        XCTAssertEqual("cde", str(try! abcde.readAll()))
+    func testReadUntilAtMost() async {
+        eq("ab", try! await abcde.read(until: "z", atMost: 2))
+        eq("cde", try! await abcde.readAll())
     }
     
-    func testReadUntilAtMostShortCircuit() {
-        XCTAssertEqual("a", str(try! abcde.read(until: "a", atMost: 2)))
-        XCTAssertEqual("bcde", str(try! abcde.readAll()))
+    func testReadUntilAtMostShortCircuit() async {
+        eq("a", try! await abcde.read(until: "a", atMost: 2))
+        eq("bcde", try! await abcde.readAll())
     }
     
-    func testReadByte() {
-        XCTAssertEqual(val("a"), try! abcde.readByte())
-        XCTAssertEqual(val("b"), try! abcde.readByte())
-        XCTAssertEqual(val("c"), try! abcde.readByte())
-        XCTAssertEqual("de", str(try! abcde.readAll()))
-        XCTAssertNil(try! abcde.readByte())
+    func testReadByte() async {
+        eq("a", try! await abcde.readByte())
+        eq("b", try! await abcde.readByte())
+        eq("c", try! await abcde.readByte())
+        eq("de", try! await abcde.readAll())
+        isNil(try! await abcde.readByte())
     }
-    
-    private func str(_ data: Data?) -> String {
-        return String(data: data!, encoding: .ascii)!
+
+    private func eq(_ expected: String, _ actual: Data?, file: StaticString = #filePath, line: UInt = #line) {
+        XCTAssertEqual(expected, String(data: actual!, encoding: .ascii)!, file: file, line: line)
     }
-    
-    private func val(_ character: UnicodeScalar) -> UInt8 {
-        return UInt8(character.value)
+
+    private func eq(_ expected: UnicodeScalar, _ actual: UInt8?, file: StaticString = #filePath, line: UInt = #line) {
+        XCTAssertEqual(UInt8(expected.value), actual!, file: file, line: line)
+    }
+
+    private func isNil(_ actual: Any?, file: StaticString = #filePath, line: UInt = #line) {
+        XCTAssertNil(actual, file: file, line: line)
     }
 }

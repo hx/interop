@@ -13,26 +13,26 @@ class BufferedByteReader : ByteReader {
         self.reader = reader
     }
 
-    func read() throws -> Data? {
+    func read() async throws -> Data? {
         if !buffer.isEmpty {
             return take()
         }
-        return try reader.read()
+        return try await reader.read()
     }
     
-    func readByte() throws -> UInt8? {
+    func readByte() async throws -> UInt8? {
         if buffer.isEmpty {
-            if try nextChunk() == nil {
+            if try await nextChunk() == nil {
                 return nil
             }
         }
         return buffer.removeFirst()
     }
     
-    func read(exactly n: Int) throws -> Data? {
+    func read(exactly n: Int) async throws -> Data? {
         var taken = take()
         while taken.count < n {
-            guard let chunk = try reader.read() else {
+            guard let chunk = try await reader.read() else {
                 throw Errors.alreadyClosed
             }
             taken.append(chunk)
@@ -41,7 +41,7 @@ class BufferedByteReader : ByteReader {
         return taken
     }
     
-    func read(until byte: UInt8, atMost byteLimit: Int = Int.max) throws -> Data? {
+    func read(until byte: UInt8, atMost byteLimit: Int = Int.max) async throws -> Data? {
         var taken = take(), check = 0
         outer: while taken.count < byteLimit || check < taken.count {
             while check < taken.count {
@@ -51,7 +51,7 @@ class BufferedByteReader : ByteReader {
                 }
                 check += 1
             }
-            if let chunk = try reader.read() {
+            if let chunk = try await reader.read() {
                 taken.append(chunk)
             } else {
                 break
@@ -61,24 +61,24 @@ class BufferedByteReader : ByteReader {
         return taken.count == 0 ? nil : taken
     }
     
-    func read(until character: UnicodeScalar, atMost byteLimit: Int = Int.max) throws -> Data? {
+    func read(until character: UnicodeScalar, atMost byteLimit: Int = Int.max) async throws -> Data? {
         let byte = character.value
         if byte > 255 {
             throw Errors.expectedSingleByte
         }
-        return try read(until: UInt8(byte), atMost: byteLimit)
+        return try await read(until: UInt8(byte), atMost: byteLimit)
     }
     
-    func readAll() throws -> Data {
+    func readAll() async throws -> Data {
         var taken = take()
-        while let chunk = try reader.read() {
+        while let chunk = try await reader.read() {
             taken.append(chunk)
         }
         return taken
     }
     
-    private func nextChunk() throws -> Data? {
-        guard let bytes = try reader.read() else {
+    private func nextChunk() async throws -> Data? {
+        guard let bytes = try await reader.read() else {
             return nil
         }
         buffer.append(bytes)

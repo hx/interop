@@ -12,13 +12,13 @@ actor StreamWriter : Writer {
     
     func write(_ message: Message) async throws {
         for header in message.getAllHeaders() {
-            try writer.write(header.name.data(using: .ascii)!)
-            try writer.write(StreamWriter.HEADER_SEP)
-            try writer.write(header.value.data(using: .ascii)!)
-            try writer.write(StreamWriter.LF)
+            try await writer.write(header.name.data(using: .ascii)!)
+            try await writer.write(StreamWriter.HEADER_SEP)
+            try await writer.write(header.value.data(using: .ascii)!)
+            try await writer.write(StreamWriter.LF)
         }
-        try writer.write(StreamWriter.LF)
-        try writer.write(message.body)
-        try writer.write(StreamWriter.LF)
+        try await writer.write(StreamWriter.LF)
+        try await writer.write(message.body)
+        try await writer.write(StreamWriter.LF)
     }
 }

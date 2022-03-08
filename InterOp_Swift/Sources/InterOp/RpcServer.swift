@@ -1,7 +1,7 @@
 import Foundation
 
 public actor RpcServer {
-    public typealias setupClosure = (_ responder: RpcResponder) -> Void
+    public typealias Setup = (_ responder: RpcResponder) -> Void
     
     private let responder = RpcResponder()
     private let conn: Conn
@@ -10,19 +10,19 @@ public actor RpcServer {
     /**
      Returns a new instance of `RpcServer` that reads from standard input, and writes to standard output.
      */
-    public static func stdio(_ setup: setupClosure) -> RpcServer {
+    public static func stdio(_ setup: Setup) -> RpcServer {
         return self.init(ReaderWriter(
             FileReader(FileHandle.standardInput),
             FileWriter(FileHandle.standardOutput)
         ), setup)
     }
     
-    public init(_ conn: Conn, _ setup: setupClosure) {
+    public init(_ conn: Conn, _ setup: Setup) {
         self.conn = conn
         setup(responder)
     }
     
-    public init(_ fileHandle: FileHandle, _ setup: setupClosure) {
+    public init(_ fileHandle: FileHandle, _ setup: Setup) {
         self.conn = ReaderWriter(fileHandle, fileHandle)
         setup(responder)
     }
