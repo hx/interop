@@ -30,7 +30,7 @@ public class MessageBuilder {
     }
     
     public func setContent<T : Encodable>(_ contentType: ContentType, _ content: T) throws -> MessageBuilder {
-        try contentType.encodeTo(self, content)
+        try contentType.encode(content, to: self)
         return self
     }
     

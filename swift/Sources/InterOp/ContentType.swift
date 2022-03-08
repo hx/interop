@@ -12,9 +12,19 @@ public class ContentType {
         self.marshaler = marshaler
     }
     
-    func encodeTo<T : Encodable>(_ builder: MessageBuilder, _ value: T) throws {
+    func encode<T : Encodable>(_ value: T) throws -> Message {
+        let builder = MessageBuilder()
+        try encode(value, to: builder)
+        return builder
+    }
+    
+    func encode<T : Encodable>(_ value: T, to builder: MessageBuilder) throws {
         _ = builder
             .setBody(try marshaler.marshal(value))
             .setContentType(name)
+    }
+    
+    func decode<T : Decodable>(_ message: Message) throws -> T {
+        return try marshaler.unmarshal(message.body, T.self)
     }
 }
