@@ -1,5 +1,5 @@
 import Foundation
 
-protocol Writer {
+public protocol Writer {
     func write(_: Message) async throws
 }

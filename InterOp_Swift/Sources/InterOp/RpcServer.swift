@@ -12,13 +12,18 @@ public actor RpcServer {
      */
     public static func stdio(_ setup: setupClosure) -> RpcServer {
         return self.init(ReaderWriter(
-            FileReader(file: FileHandle.standardInput),
-            FileWriter(file: FileHandle.standardOutput)
+            FileReader(FileHandle.standardInput),
+            FileWriter(FileHandle.standardOutput)
         ), setup)
     }
     
-    init(_ conn: Conn, _ setup: setupClosure) {
+    public init(_ conn: Conn, _ setup: setupClosure) {
         self.conn = conn
+        setup(responder)
+    }
+    
+    public init(_ fileHandle: FileHandle, _ setup: setupClosure) {
+        self.conn = ReaderWriter(fileHandle, fileHandle)
         setup(responder)
     }
     

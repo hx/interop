@@ -1,5 +1,5 @@
 import Foundation
 
-protocol Reader {
+public protocol Reader {
     func read() async throws -> Message?
 }

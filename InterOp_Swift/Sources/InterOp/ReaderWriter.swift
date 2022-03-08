@@ -16,6 +16,13 @@ struct ReaderWriter : Conn {
         )
     }
     
+    init(_ reader: FileHandle, _ writer: FileHandle) {
+        self.init(
+            FileReader(reader),
+            FileWriter(writer)
+        )
+    }
+    
     func read() async throws -> Message? {
         return try await reader.read()
     }

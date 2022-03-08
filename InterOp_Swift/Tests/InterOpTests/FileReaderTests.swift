@@ -20,7 +20,7 @@ class FileReaderTests: XCTestCase {
         let url = makeTempFile("foobar")
         let handle = try FileHandle(forReadingFrom: url)
         defer { try? handle.close() }
-        let reader = FileReader(file: handle)
+        let reader = FileReader(handle)
         XCTAssertEqual("foobar", String(data: try! reader.read()!, encoding: .ascii))
     }
 }
