@@ -1,6 +1,6 @@
 {
   "name": "@hxjs/interop",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Make all the languages talk to each other",
   "main": "js/dist/index.js",
   "types": "js/dist/index.d.ts",
