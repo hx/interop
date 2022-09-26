@@ -35,8 +35,14 @@ export const parseMessageFromBlob = async (blob: Blob): Promise<Message> => {
   const headerBlob   = await extractHeadersFromBlob(blob)
   const headerString = await headerBlob.text()
   const headers      = mapToObj(headerString.trim().split(/\r?\n/), line => {
-    const [k, v] = line.split(/:\s?/, 2)
-    return [canonicalizeKey(k), v || '']
+    const splitAt = line.indexOf(':')
+    if (splitAt === -1) {
+      throw new Error(`Expected a colon in "${line}`)
+    }
+    return [
+      canonicalizeKey(line.slice(0, splitAt)),
+      line.slice(splitAt + 1).trimStart()
+    ]
   }) as unknown as Headers
 
   let body = blob.slice(headerBlob.size)
