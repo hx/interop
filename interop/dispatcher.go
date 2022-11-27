@@ -1,18 +1,25 @@
 package interop
 
 import (
+	"context"
 	"regexp"
 	"sync"
 )
 
 type Responder interface {
-	Respond(request Message, response *MessageBuilder)
+	Respond(ctx context.Context, request Message, response *MessageBuilder)
 }
 
 type ResponderFunc func(request Message, response *MessageBuilder)
 
-func (f ResponderFunc) Respond(request Message, response *MessageBuilder) {
+func (f ResponderFunc) Respond(_ context.Context, request Message, response *MessageBuilder) {
 	f(request, response)
+}
+
+type ResponderContextFunc func(ctx context.Context, request Message, response *MessageBuilder)
+
+func (f ResponderContextFunc) Respond(ctx context.Context, request Message, response *MessageBuilder) {
+	f(ctx, request, response)
 }
 
 type rpcRoute struct {
@@ -39,13 +46,13 @@ func (d *RpcDispatcher) HandleClassRegexp(pattern *regexp.Regexp, responder Resp
 	d.Handle(MatchClassRegexp(pattern), responder)
 }
 
-func (d *RpcDispatcher) Respond(request Message, response *MessageBuilder) {
+func (d *RpcDispatcher) Respond(ctx context.Context, request Message, response *MessageBuilder) {
 	d.mutex.RLock()
 	routes := d.routes
 	d.mutex.RUnlock()
 	for _, route := range routes {
 		if route.matcher == nil || route.matcher.Match(request) {
-			route.responder.Respond(request, response)
+			route.responder.Respond(ctx, request, response)
 			return
 		}
 	}

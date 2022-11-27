@@ -25,6 +25,7 @@ func NewRpcServer(conn Conn) (server *RpcServer) {
 func (s *RpcServer) Run() (err error) {
 	s.err = make(chan error, 2)
 	var req Message
+	ctx, cancel := context.WithCancel(context.Background())
 	for {
 		req, err = s.conn.Read()
 		if err != nil {
@@ -45,10 +46,12 @@ func (s *RpcServer) Run() (err error) {
 				}
 				s.wait.Done()
 			}()
-			s.Respond(req, res)
+			s.Respond(ctx, req, res)
 		}(req)
 	}
-	return <-s.err
+	err = <-s.err
+	cancel()
+	return
 }
 
 func (s *RpcServer) Send(event Message) error {
