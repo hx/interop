@@ -1,12 +1,17 @@
 package interop
 
-import "fmt"
+import (
+	"context"
+	"fmt"
+	"sync"
+)
 
 type RpcServer struct {
 	RpcDispatcher
 	bgRunner
 	conn Conn
 	err  chan error
+	wait sync.WaitGroup
 }
 
 func NewRpcServer(conn Conn) (server *RpcServer) {
@@ -26,6 +31,7 @@ func (s *RpcServer) Run() (err error) {
 			s.err <- err
 			break
 		}
+		s.wait.Add(1)
 		go func(req Message) {
 			res := new(MessageBuilder)
 			defer func() {
@@ -37,6 +43,7 @@ func (s *RpcServer) Run() (err error) {
 				if err := s.conn.Write(res); err != nil {
 					s.err <- err
 				}
+				s.wait.Done()
 			}()
 			s.Respond(req, res)
 		}(req)
@@ -49,4 +56,29 @@ func (s *RpcServer) Send(event Message) error {
 		return ErrEventHasID
 	}
 	return s.conn.Write(event)
+}
+
+// WaitClean blocks while RPC requests are running, even after Run has returned.
+func (s *RpcServer) WaitClean() { s.wait.Wait() }
+
+func (s *RpcServer) WaitCleanContext(ctx context.Context) error {
+	if err := waitContext(ctx, s.WaitClean); err != nil {
+		return fmt.Errorf("did not wait for RPC responses to be sent: %w", err)
+	}
+	return nil
+
+}
+
+func waitContext(ctx context.Context, wait func()) error {
+	done := make(chan struct{})
+	go func() {
+		wait()
+		close(done)
+	}()
+	select {
+	case <-done:
+		return nil
+	case <-ctx.Done():
+		return ctx.Err()
+	}
 }
