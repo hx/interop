@@ -46,7 +46,7 @@ func (s *RpcServer) Run() (err error) {
 				}
 				s.wait.Done()
 			}()
-			s.Respond(ctx, req, res)
+			s.Respond(ctx, messageWithConn{req, s.conn}, res)
 		}(req)
 	}
 	err = <-s.err
@@ -70,6 +70,20 @@ func (s *RpcServer) WaitCleanContext(ctx context.Context) error {
 	}
 	return nil
 
+}
+
+type messageWithConn struct {
+	Message
+	Conn
+}
+
+// RpcRequestSource returns the Conn from which an RPC Message was received. If the Message did not come from an
+// RpcServer, nil is returned.
+func RpcRequestSource(request Message) Conn {
+	if m, ok := request.(messageWithConn); ok {
+		return m.Conn
+	}
+	return nil
 }
 
 func waitContext(ctx context.Context, wait func()) error {
